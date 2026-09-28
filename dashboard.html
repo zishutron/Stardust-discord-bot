@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Servers — Stardust Dashboard</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Manage Stardust on your Discord servers.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body class="dash-body">
+
+<!-- ═══════════ TOP BAR ═══════════ -->
+<header class="dash-topbar">
+  <div class="dash-topbar-inner">
+    <a href="index.html" class="brand">
+      <img class="brand-mark"
+           src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png"
+           alt="Stardust" width="28" height="28">
+      <span class="brand-name">Stardust</span>
+    </a>
+
+    <span class="dash-topbar-crumb">Dashboard</span>
+
+    <div class="dash-topbar-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+
+      <div class="user-menu" id="userMenu" hidden>
+        <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false">
+          <img class="user-avatar" id="userAvatar" src="" alt="">
+          <span class="user-name" id="userName">—</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="user-dropdown" id="userDropdown" role="menu">
+          <a href="dashboard.html" class="dropdown-item" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 9V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3M3 9v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/></svg>
+            My servers
+          </a>
+          <a href="support.html" class="dropdown-item" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+            Support
+          </a>
+          <div class="dropdown-sep"></div>
+          <button class="dropdown-item danger" id="logoutBtn" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            Log out
+          </button>
+        </div>
+      </div>
+
+      <a href="#" class="btn btn-primary" id="addBotBtn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add Stardust
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<main class="dash-main">
+  <div class="dash-container">
+
+    <!-- Loading state -->
+    <section class="dash-loading" id="loadingState">
+      <div class="skeleton-grid">
+        <div class="skeleton-card"><div class="skeleton skeleton-avatar"></div><div class="skeleton skeleton-line w60"></div><div class="skeleton skeleton-line w40"></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-avatar"></div><div class="skeleton skeleton-line w60"></div><div class="skeleton skeleton-line w40"></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-avatar"></div><div class="skeleton skeleton-line w60"></div><div class="skeleton skeleton-line w40"></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-avatar"></div><div class="skeleton skeleton-line w60"></div><div class="skeleton skeleton-line w40"></div></div>
+      </div>
+      <p class="dash-loading-text">Loading your servers…</p>
+    </section>
+
+    <!-- Error state -->
+    <section class="dash-error" id="errorState" hidden>
+      <div class="empty-card">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        </div>
+        <h2 id="errorTitle">Something went wrong</h2>
+        <p id="errorMessage">We couldn't load your servers. Please try again.</p>
+        <div class="empty-actions">
+          <button class="btn btn-primary" id="retryBtn">Try again</button>
+          <a href="index.html" class="btn btn-secondary">Back home</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Not logged in state -->
+    <section class="dash-error" id="unauthState" hidden>
+      <div class="empty-card">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+        </div>
+        <h2>You're not signed in</h2>
+        <p>Log in with your Discord account to manage Stardust on your servers.</p>
+        <div class="empty-actions">
+          <button class="btn btn-primary login-btn" id="loginFromDash">Login with Discord</button>
+          <a href="index.html" class="btn btn-secondary">Back home</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="dash-content" id="mainContent" hidden>
+      <div class="dash-head">
+        <div>
+          <h1 class="dash-title">Your servers</h1>
+          <p class="dash-subtitle">Select a server to configure Stardust, or add it to a new one.</p>
+        </div>
+        <div class="dash-search">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" id="serverSearch" placeholder="Search servers…" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="server-filter-tabs" role="tablist">
+        <button class="filter-tab active" data-filter="all" role="tab">All <span class="tab-count" id="countAll">0</span></button>
+        <button class="filter-tab" data-filter="manageable" role="tab">Manageable <span class="tab-count" id="countManageable">0</span></button>
+        <button class="filter-tab" data-filter="missing" role="tab">Add Stardust <span class="tab-count" id="countMissing">0</span></button>
+      </div>
+
+      <div class="server-grid" id="serverGrid"></div>
+
+      <div class="empty-state" id="emptyState" hidden>
+        <div class="empty-card">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 15h2"/></svg>
+          </div>
+          <h2 id="emptyTitle">No servers found</h2>
+          <p id="emptyMessage">You're not in any Discord servers that match this filter.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="api.js"></script>
+<script src="app.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>

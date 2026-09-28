@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Features — Stardust</title>
+<meta name="description" content="Every feature Stardust ships with — moderation, AutoMod, tickets, economy, leveling, giveaways, games, and more.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="pages.css">
+</head>
+<body>
+
+<!-- HEADER (same as index) -->
+<header class="site-header" id="siteHeader">
+  <div class="container header-inner">
+    <a href="index.html" class="brand">
+      <img class="brand-mark" src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png" alt="Stardust" width="32" height="32">
+      <span class="brand-name">Stardust</span>
+    </a>
+    <nav class="nav-desktop" aria-label="Main">
+      <a href="features.html">Features</a>
+      <a href="commands.html">Commands</a>
+      <a href="docs.html">Docs</a>
+      <a href="status.html">Status</a>
+      <a href="support.html">Support</a>
+    </nav>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="#" class="btn btn-ghost login-btn">Login</a>
+      <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" class="btn btn-primary" target="_blank" rel="noopener">Add to Discord</a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-header">
+    <a href="index.html" class="brand">
+      <img class="brand-mark" src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png" alt="Stardust" width="28" height="28">
+      <span class="brand-name">Stardust</span>
+    </a>
+    <button class="drawer-close" id="drawerClose" aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <nav class="drawer-nav">
+    <a href="features.html">Features</a>
+    <a href="commands.html">Commands</a>
+    <a href="docs.html">Docs</a>
+    <a href="status.html">Status</a>
+    <a href="support.html">Support</a>
+  </nav>
+  <div class="drawer-actions">
+    <a href="#" class="btn btn-ghost login-btn">Login with Discord</a>
+    <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" class="btn btn-primary" target="_blank" rel="noopener">Add to Discord</a>
+  </div>
+</aside>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="container page-hero-inner">
+    <span class="section-eyebrow">Features</span>
+    <h1>Everything you need to run a great server.</h1>
+    <p>Stardust ships with 40+ slash commands across 8 core modules — all connected to a single dashboard.</p>
+    <div class="page-toc">
+      <a href="#moderation">Moderation</a>
+      <a href="#automod">AutoMod</a>
+      <a href="#welcome">Welcome</a>
+      <a href="#tickets">Tickets</a>
+      <a href="#economy">Economy</a>
+      <a href="#leveling">Leveling</a>
+      <a href="#giveaways">Giveaways</a>
+      <a href="#games">Games</a>
+      <a href="#utilities">Utilities</a>
+    </div>
+  </div>
+</section>
+
+<!-- BODY -->
+<main class="page-body">
+  <div class="page-container">
+
+    <!-- MODERATION -->
+    <section class="pg-section" id="moderation">
+      <div class="pg-section-head">
+        <span class="pg-eyebrow">Moderation</span>
+        <h2 class="pg-h2">Enforce rules without friction.</h2>
+        <p class="pg-sub">Every action is guarded by Discord's native permission system and role hierarchy.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Kick & ban</h3>
+          <p>Remove members with an optional reason. Bans are permanent and logged server-side.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Timeout</h3>
+          <p>Mute members for any duration. Ideal for temporary cool-downs.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Warnings</h3>
+          <p>Issue formal warnings with reasons. Members receive a private DM notification.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Role management</h3>
+          <p>Add or remove roles from members. Bot role hierarchy is validated before every action.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AUTOMOD -->
+    <section class="pg-section" id="automod">
+      <div class="pg-section-head">
+        <span class="pg-eyebrow">AutoMod</span>
+        <h2 class="pg-h2">Automatic protection, per-server.</h2>
+        <p class="pg-sub">Configure the block list directly from the dashboard — no commands needed.</p>
+      </div>
+      <ul class="pg-list">
+        <li>Custom blocked-word list per server</li>
+        <li>Instant message deletion on match</li>
+        <li>Ephemeral warnings auto-removed after 4 seconds</li>
+        <li>Toggle the entire system on/off from the dashboard</li>
+      </ul>
+    </section>
+
+    <!-- WELCOME -->
+    <section class="pg-section" id="welcome">
+      <div class="pg-section-head">
+        <span class="pg-eyebrow">Welcome & Leave</span>
+        <h2 class="pg-h2">Greet members the moment they arrive.</h2>
+        <p class="pg-sub">Rich embed cards with custom imagery and member counts.</p>
+      </div>
+      <ul class="pg-list">
+        <li>Welcome channel with formatted card embed</li>
+        <li>Separate leave channel with custom message templates</li>
+        <li><code>{user}</code> and <code>{server}</code> placeholders supported</li>
+        <li>One-click test trigger via <code>/welcome-test</code></li>
+      </ul>
+    </section>
+
+    <!-- TICKETS -->
+    <section class="pg-section" id="tickets">
+      <div class="pg-section-head">
+        <span class="pg-eyebrow">Tickets</span>
+        <h2 class="pg-h2">A complete support helpdesk.</h2>
+        <p class="pg-sub">Private channels, staff claiming, transcripts, and full log archiving.</p>
+      </div>
+      <ul class="pg-list">
+        <li>Deployable support panel via <code>/ticket_setup</code></li>
+        <li>Private ticket channels with proper permission overwrites</li>
+        <li>Staff "claim ticket" button with moderator attribution</li>
+        <li>Automatic transcripts on close — sent to <code>#ticket-logs</code></li>
+        <li>Customizable welcome title and message via <code>/ticket_config</code></li>
+      </ul>
+    </section>
+
+    <!-- ECONOMY -->
+    <section class="pg-section" id="economy">
+      <div class="pg-section-head">
+        <span class="pg-eyebrow">Economy</span>
+        <h2 class="pg-h2">Currency, rewards, and a global shop.</h2>
+        <p class="pg-sub">Member balances, chat rewards, a 16-dish menu, premium shop, and inventory.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Daily rewards</h3>
+          <p>200 coins every 24 hours via <code>/daily</code>.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Chat wages</h3>
+          <p>Random 5,000–75,000 coin drops when members chat (10% chance).</p>
+        </div>
+        <div class="feature-card">
+          <h3>Global menu</h3>
+          <p>16 premium dishes from around the world, purchasable with <code>/serve</code>.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Shop & inventory</h3>
+          <p>Pets, badges, and collectibles with <code>/buy</code> and <code>/inventory</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEVELING -->
+    <section class="pg-section" id="leveling">
+      <div class="pg-section-head">
+        <span class="pg-eyebrow">Leveling</span>
+        <h2 class="pg-h2">Progression that feels rewarding.</h2>
+        <p class="pg-sub">Free Fire–style tier system with custom rank cards.</p>
+      </div>
+      <ul class="pg-list">
+        <li>XP gained per chat message (60s cooldown per user)</li>
+        <li>Custom rank card with avatar, tier, XP progress bar</li>
+        <li>Level-up announcements with a generated image</li>
+        <li>12 tiers from 🥉 Bronze I through 👑 Grandmaster</li>
+      </ul>
+    </section>
+
+    <!-- GIVEAWAYS -->
+    <section class="pg-section" id="giveaways">
+      <div class="pg-section-head">
+        <span class="pg-eyebrow">Giveaways</span>
+        <h2 class="pg-h2">Host giveaways in seconds.</h2>
+        <p class="pg-sub">Reaction-based entry with automatic winner selection.</p>
+      </div>
+      <ul class="pg-list">
+        <li>Duration parsing (<code>30m</code>, <code>5h</code>, <code>1d</code>)</li>
+        <li>Multiple winners per giveaway</li>
+        <li>Auto-conclusion with winner pings</li>
+        <li>Startable from the dashboard or via <code>/gstart</code></li>
+      </ul>
+    </section>
+
+    <!-- GAMES -->
+    <section class="pg-section" id="games">
+      <div class="pg-section-head">
+        <span class="pg-eyebrow">Games & Anime</span>
+        <h2 class="pg-h2">Fun that keeps members coming back.</h2>
+        <p class="pg-sub">Interactive games with economy rewards and roleplay actions.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card"><h3>Rock Paper Scissors</h3><p>Play vs a member or the bot. Winners get 100 coins.</p></div>
+        <div class="feature-card"><h3>Tic Tac Toe</h3><p>Full 3×3 grid game with a winner bonus.</p></div>
+        <div class="feature-card"><h3>Slap fight</h3><p>HP-based interaction game with 250 coin rewards.</p></div>
+        <div class="feature-card"><h3>Anime roleplay</h3><p><code>/hug</code>, <code>/kiss</code>, <code>/slap</code> with animated GIFs.</p></div>
+        <div class="feature-card"><h3>Waifu & husbandu</h3><p>Claim characters from <code>$w</code> and <code>$m</code> commands.</p></div>
+        <div class="feature-card"><h3>Confessions</h3><p>Anonymous confession box with a reply system.</p></div>
+      </div>
+    </section>
+
+    <!-- UTILITIES -->
+    <section class="pg-section" id="utilities">
+      <div class="pg-section-head">
+        <span class="pg-eyebrow">Utilities</span>
+        <h2 class="pg-h2">Quality-of-life tools for everyone.</h2>
+      </div>
+      <ul class="pg-list">
+        <li><code>/embed_builder</code> — interactive custom embed modal</li>
+        <li><code>/matrixpoll</code> — native Discord reaction polls</li>
+        <li><code>/remindme</code> — personal one-off reminders</li>
+        <li><code>/afk</code> — AFK status with automatic mention responses</li>
+        <li><code>/rollmatrix</code>, <code>/stardustquote</code>, <code>/ping</code> — quick utilities</li>
+      </ul>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section" style="padding: 0; margin-top: 32px;">
+      <div class="cta-inner">
+        <h2>Ready to try Stardust?</h2>
+        <p>Add the bot in under 30 seconds. Configure everything from the dashboard.</p>
+        <div class="cta-actions">
+          <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" class="btn btn-primary btn-lg" target="_blank" rel="noopener">Add Stardust</a>
+          <a href="docs.html" class="btn btn-secondary btn-lg">Read the docs</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img class="brand-mark" src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png" alt="Stardust" width="28" height="28">
+          <span class="brand-name">Stardust</span>
+        </a>
+        <p>Powerful tools for better Discord communities.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="features.html">Features</a>
+        <a href="commands.html">Commands</a>
+        <a href="docs.html">Documentation</a>
+        <a href="status.html">Status</a>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <a href="support.html">Support server</a>
+        <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener">Add to Discord</a>
+        <a href="#" class="login-btn">Dashboard</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Stardust. All rights reserved.</span>
+      <span class="footer-status">
+        <span class="dot" id="footerStatusDot"></span>
+        <span id="footerStatusText">Checking status…</span>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<script src="api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

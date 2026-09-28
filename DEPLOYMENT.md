@@ -1,3 +1,71 @@
+# Stardust — Deployment & Testing Checklist
+
+Complete deployment checklist for both the frontend (GitHub Pages) and backend (Render).
+
+---
+
+## 📋 Table of Contents
+
+1. [Prerequisites](#1-prerequisites)
+2. [Backend Deployment (Render)](#2-backend-deployment-render)
+3. [Frontend Deployment (GitHub Pages)](#3-frontend-deployment-github-pages)
+4. [Discord Developer Portal Setup](#4-discord-developer-portal-setup)
+5. [Post-Deploy Verification](#5-post-deploy-verification)
+6. [Testing Checklist](#6-testing-checklist)
+7. [Troubleshooting](#7-troubleshooting)
+
+---
+
+## 1. Prerequisites
+
+- [ ] GitHub account with a repository named `Stardust-discord-bot`
+- [ ] Render account (free tier is fine)
+- [ ] Discord Developer Portal access to your Stardust application
+- [ ] Bot token generated (from Discord Dev Portal → Bot)
+
+---
+
+## 2. Backend Deployment (Render)
+
+### 2.1 Create the Service
+
+1. Render Dashboard → **New** → **Web Service**
+2. Connect your GitHub repo — but for the bot only, use a separate private repo or the same repo with a subfolder
+3. **Build Command:** `pip install -r requirements.txt`
+4. **Start Command:** `python main.py`
+5. **Environment:** Python 3
+
+### 2.2 Environment Variables
+
+Set these in Render → your service → **Environment**:
+
+| Key | Value |
+|---|---|
+| `DISCORD_TOKEN` | Your bot token |
+| `DISCORD_CLIENT_ID` | `1517046273037832342` (or your client ID) |
+| `DISCORD_CLIENT_SECRET` | From Discord Dev Portal → OAuth2 |
+| `OAUTH_REDIRECT` | `https://stardust-bot.onrender.com/api/callback` |
+| `FRONTEND_URL` | `https://zishutron.github.io` **(NO path, NO trailing slash)** |
+| `SESSION_SECRET` | A long random string (32+ chars) |
+
+### 2.3 Verify
+
+Visit: `https://stardust-bot.onrender.com/api/health`
+
+Expected response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "api": "ok",
+    "bot_ready": true,
+    "bot_latency_ms": 42,
+    "guild_count": 5,
+    "timestamp": 1735689600
+  }
+}
+
 ⚠️ Free Tier Note: The backend sleeps after ~15 min of inactivity. First request after sleep takes 20–30 seconds. If the free-tier hour limit is exhausted, the service is offline until the next billing cycle.
 
 3. Frontend Deployment (GitHub Pages)

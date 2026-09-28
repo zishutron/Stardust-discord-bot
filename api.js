@@ -1,132 +1,123 @@
 /* ═══════════════════════════════════════════════════════════
-   STARDUST — Centralized API Client
-   All frontend → backend communication flows through here.
+   STARDUST — API Client
+   Bulletproof: every call wrapped, never throws at import time
    ═══════════════════════════════════════════════════════════ */
 
-const StardustAPI = (() => {
-  const BASE = 'https://stardust-bot.onrender.com';
+(function () {
+  'use strict';
 
-  async function request(path, options = {}) {
-    const url = `${BASE}${path}`;
-    const opts = {
-      credentials: 'include', // send cookies cross-domain
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-      ...options,
+  var BASE = 'https://stardust-bot.onrender.com';
+
+  async function request(path, options) {
+    options = options || {};
+    var url = BASE + path;
+    var opts = {
+      credentials: 'include',
+      headers: Object.assign(
+        { 'Content-Type': 'application/json' },
+        options.headers || {}
+      ),
+      method: options.method || 'GET'
     };
+    if (options.body) opts.body = options.body;
 
     try {
-      const res = await fetch(url, opts);
-      const text = await res.text();
-      let json;
-      try { json = text ? JSON.parse(text) : {}; }
-      catch { json = { success: false, error: { code: 'BAD_JSON', message: 'Invalid response' } }; }
+      var res = await fetch(url, opts);
+      var text = '';
+      try { text = await res.text(); } catch (e) { text = ''; }
+
+      var json = {};
+      if (text) {
+        try { json = JSON.parse(text); }
+        catch (e) {
+          json = { success: false, error: { code: 'BAD_JSON', message: 'Invalid response' } };
+        }
+      }
 
       if (!res.ok) {
         return {
           ok: false,
           status: res.status,
-          error: json.error || { code: 'HTTP_' + res.status, message: 'Request failed' }
+          error: json.error || { code: 'HTTP_' + res.status, message: 'Request failed (' + res.status + ')' }
         };
       }
-      return { ok: true, status: res.status, data: json.data ?? json };
+
+      return {
+        ok: true,
+        status: res.status,
+        data: (json && json.data !== undefined) ? json.data : json
+      };
     } catch (err) {
       return {
         ok: false,
         status: 0,
-        error: { code: 'NETWORK', message: 'Backend unavailable. Render may be waking up.' }
+        error: {
+          code: 'NETWORK',
+          message: 'Backend unreachable. Render may be waking up — try again in 30 seconds.'
+        }
       };
     }
   }
 
-  return {
+  var API = {
     base: BASE,
+    request: request,
 
-    // ─── Auth ───
-    async login() {
-      const res = await request('/api/login');
-      if (res.ok && res.data?.url) {
-        window.location.href = res.data.url;
-      } else {
-        throw new Error(res.error?.message || 'Login failed');
-      }
+    login: function () {
+      return request('/api/login').then(function (res) {
+        if (res.ok && res.data && res.data.url) {
+          window.location.href = res.data.url;
+          return res;
+        }
+        throw new Error((res.error && res.error.message) || 'Login failed');
+      });
     },
 
-    async me() {
-      return request('/api/auth/me');
-    },
+    me: function () { return request('/api/auth/me'); },
+    servers: function () { return request('/api/auth/servers'); },
+    logout: function () { return request('/api/logout', { method: 'POST' }); },
 
-    async servers() {
-      return request('/api/auth/servers');
-    },
-
-    async logout() {
-      return request('/api/logout', { method: 'POST' });
-    },
-
-    // ─── Guild ───
-    async overview(guildId) {
-      return request(`/api/guilds/${guildId}/overview`);
-    },
-
-    async getConfig(guildId) {
-      return request(`/api/guilds/${guildId}/config`);
-    },
-
-    async updateConfig(guildId, patch) {
-      return request(`/api/guilds/${guildId}/config`, {
+    overview: function (gid) { return request('/api/guilds/' + gid + '/overview'); },
+    getConfig: function (gid) { return request('/api/guilds/' + gid + '/config'); },
+    updateConfig: function (gid, patch) {
+      return request('/api/guilds/' + gid + '/config', {
         method: 'PATCH',
-        body: JSON.stringify(patch),
+        body: JSON.stringify(patch)
       });
     },
 
-    async automodWords(guildId) {
-      return request(`/api/guilds/${guildId}/automod/words`);
-    },
-
-    async addAutomodWord(guildId, word) {
-      return request(`/api/guilds/${guildId}/automod/words`, {
+    automodWords: function (gid) { return request('/api/guilds/' + gid + '/automod/words'); },
+    addAutomodWord: function (gid, word) {
+      return request('/api/guilds/' + gid + '/automod/words', {
         method: 'POST',
-        body: JSON.stringify({ word }),
+        body: JSON.stringify({ word: word })
       });
     },
-
-    async removeAutomodWord(guildId, word) {
-      return request(`/api/guilds/${guildId}/automod/words`, {
+    removeAutomodWord: function (gid, word) {
+      return request('/api/guilds/' + gid + '/automod/words', {
         method: 'DELETE',
-        body: JSON.stringify({ word }),
+        body: JSON.stringify({ word: word })
       });
     },
 
-    async economyLeaderboard(guildId) {
-      return request(`/api/guilds/${guildId}/economy/leaderboard`);
+    economyLeaderboard: function (gid) { return request('/api/guilds/' + gid + '/economy/leaderboard'); },
+    startGiveaway: function (gid, payload) {
+      return request('/api/guilds/' + gid + '/giveaway', { method: 'POST', body: JSON.stringify(payload) });
     },
-
-    async startGiveaway(guildId, payload) {
-      return request(`/api/guilds/${guildId}/giveaway`, {
+    sendEmbed: function (gid, payload) {
+      return request('/api/guilds/' + gid + '/embed', { method: 'POST', body: JSON.stringify(payload) });
+    },
+    deployTicketPanel: function (gid, chId) {
+      return request('/api/guilds/' + gid + '/tickets/deploy', {
         method: 'POST',
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ channel_id: chId })
       });
     },
 
-    async sendEmbed(guildId, payload) {
-      return request(`/api/guilds/${guildId}/embed`, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-    },
-
-    async deployTicketPanel(guildId, channelId) {
-      return request(`/api/guilds/${guildId}/tickets/deploy`, {
-        method: 'POST',
-        body: JSON.stringify({ channel_id: channelId }),
-      });
-    },
-
-    // ─── Public health ───
-    async health() {
-      return request('/api/health');
-    },
+    health: function () { return request('/api/health'); }
   };
-})();
 
-window.StardustAPI = StardustAPI;
+  window.StardustAPI = API;
+
+  if (window.console) console.log('[Stardust] api.js loaded');
+})();

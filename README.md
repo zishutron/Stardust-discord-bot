@@ -150,19 +150,19 @@ Full details at features.html.
 
 ---
 
-📄 License
+## 📄 License
 
-© 2026 Stardust. All rights reserved.
+### © 2026 Stardust. All rights reserved.
 
-The site and dashboard are original works. The bot operates under Discord's Terms of Service and Developer Policy.
+### The site and dashboard are original works. The bot operates under Discord's Terms of Service and Developer Policy.
 
 ```
 
 ---
 
-## 📄 FILE 5: `DEPLOYMENT.md`
+## DEPLOYMENT
 
-```markdown
+
 # Stardust — Deployment & Testing Checklist
 
 Complete deployment checklist for both the frontend (GitHub Pages) and backend (Render).

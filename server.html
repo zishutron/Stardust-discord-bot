@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Server Dashboard — Stardust</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="dashboard.css">
+<link rel="stylesheet" href="server.css">
+</head>
+<body class="dash-body server-body">
+
+<!-- ═══════════ TOP BAR ═══════════ -->
+<header class="dash-topbar">
+  <div class="dash-topbar-inner">
+    <a href="index.html" class="brand">
+      <img class="brand-mark"
+           src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png"
+           alt="Stardust" width="28" height="28">
+      <span class="brand-name">Stardust</span>
+    </a>
+
+    <span class="dash-topbar-crumb" id="crumb">
+      <a href="dashboard.html">Dashboard</a>
+      <span class="crumb-sep">/</span>
+      <span id="crumbServer">Loading…</span>
+    </span>
+
+    <div class="dash-topbar-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+
+      <div class="user-menu" id="userMenu" hidden>
+        <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false">
+          <img class="user-avatar" id="userAvatar" src="" alt="">
+          <span class="user-name" id="userName">—</span>
+        </button>
+        <div class="user-dropdown" id="userDropdown" role="menu">
+          <a href="dashboard.html" class="dropdown-item">My servers</a>
+          <a href="support.html" class="dropdown-item">Support</a>
+          <div class="dropdown-sep"></div>
+          <button class="dropdown-item danger" id="logoutBtn">Log out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ SERVER SHELL ═══════════ -->
+<div class="server-shell" id="serverShell">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="server-sidebar" id="serverSidebar" aria-hidden="true">
+
+    <!-- Server identity -->
+    <div class="sidebar-server" id="sidebarServer">
+      <div class="skeleton skeleton-avatar" style="width:40px;height:40px;border-radius:10px;"></div>
+      <div style="flex:1;min-width:0;">
+        <div class="skeleton skeleton-line w60" style="margin-bottom:6px;"></div>
+        <div class="skeleton skeleton-line w40" style="height:9px;"></div>
+      </div>
+    </div>
+
+    <!-- Module nav -->
+    <nav class="sidebar-nav" aria-label="Server modules">
+      <div class="sidebar-group">
+        <span class="sidebar-group-label">Overview</span>
+        <a href="#overview"  class="sidebar-link active" data-tab="overview">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 9V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3M3 9v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/></svg>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="sidebar-group">
+        <span class="sidebar-group-label">Server Management</span>
+        <a href="#moderation" class="sidebar-link" data-tab="moderation">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Moderation
+        </a>
+        <a href="#automod"    class="sidebar-link" data-tab="automod">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4v6c0 5-3 8-7 10-4-2-7-5-7-10V6l7-4z"/><path d="M9 12l2 2 4-4"/></svg>
+          AutoMod
+        </a>
+        <a href="#welcome"    class="sidebar-link" data-tab="welcome">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Welcome & Leave
+        </a>
+        <a href="#tickets"    class="sidebar-link" data-tab="tickets">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 9V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3M3 9v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9M9 15h6"/></svg>
+          Tickets
+        </a>
+        <a href="#logging"    class="sidebar-link" data-tab="logging">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          Logging
+        </a>
+      </div>
+
+      <div class="sidebar-group">
+        <span class="sidebar-group-label">Community</span>
+        <a href="#economy"    class="sidebar-link" data-tab="economy">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a2 2 0 0 1 0 4h-3a2 2 0 0 0 0 4h4"/></svg>
+          Economy
+        </a>
+        <a href="#leveling"   class="sidebar-link" data-tab="leveling">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>
+          Leveling
+        </a>
+        <a href="#giveaways"  class="sidebar-link" data-tab="giveaways">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"/><path d="M2 7h20v5H2zM12 7v13"/></svg>
+          Giveaways
+        </a>
+      </div>
+
+      <div class="sidebar-group">
+        <span class="sidebar-group-label">Tools</span>
+        <a href="#embeds"     class="sidebar-link" data-tab="embeds">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H4zM4 20h16M8 16l-2 4M16 16l2 4"/></svg>
+          Embed Builder
+        </a>
+        <a href="#commands"   class="sidebar-link" data-tab="commands">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          Commands
+        </a>
+        <a href="#settings"   class="sidebar-link" data-tab="settings">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </div>
+    </nav>
+
+    <!-- Footer of sidebar -->
+    <div class="sidebar-footer">
+      <a href="docs.html" class="sidebar-link small">Documentation</a>
+      <a href="support.html" class="sidebar-link small">Support</a>
+      <a href="status.html" class="sidebar-link small">Status</a>
+    </div>
+  </aside>
+
+  <!-- OVERLAY for mobile -->
+  <div class="server-overlay" id="serverOverlay"></div>
+
+  <!-- MAIN AREA -->
+  <main class="server-main">
+    <!-- Mobile hamburger -->
+    <button class="server-mobile-menu" id="serverMobileMenu" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+
+    <!-- Loading -->
+    <section class="server-loading" id="serverLoading">
+      <div class="server-header-skeleton">
+        <div class="skeleton skeleton-avatar" style="width:64px;height:64px;border-radius:14px;"></div>
+        <div style="flex:1;">
+          <div class="skeleton skeleton-line w40" style="height:20px;margin-bottom:8px;"></div>
+          <div class="skeleton skeleton-line w60" style="height:12px;"></div>
+        </div>
+      </div>
+      <div class="skeleton-grid" style="margin-top:24px;">
+        <div class="skeleton-card"><div class="skeleton skeleton-line w60"></div><div class="skeleton skeleton-line w40"></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-line w60"></div><div class="skeleton skeleton-line w40"></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-line w60"></div><div class="skeleton skeleton-line w40"></div></div>
+      </div>
+    </section>
+
+    <!-- Error -->
+    <section class="server-error" id="serverError" hidden>
+      <div class="empty-card">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        </div>
+        <h2 id="serverErrorTitle">Something went wrong</h2>
+        <p id="serverErrorMessage">Unable to load server dashboard.</p>
+        <div class="empty-actions">
+          <a href="dashboard.html" class="btn btn-primary">Back to servers</a>
+          <button class="btn btn-secondary" id="serverRetryBtn">Try again</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content -->
+    <section class="server-content" id="serverContent" hidden>
+
+      <!-- ═══ OVERVIEW ═══ -->
+      <div class="tab-panel active" data-panel="overview">
+        <div class="server-hero" id="serverHero">
+          <div class="server-hero-icon" id="serverHeroIcon"></div>
+          <div class="server-hero-meta">
+            <h1 class="server-hero-name" id="serverHeroName">Server</h1>
+            <div class="server-hero-stats" id="serverHeroStats"></div>
+          </div>
+        </div>
+
+        <div class="stats-row" id="statsRow"></div>
+
+        <h2 class="section-h2">Module status</h2>
+        <div class="modules-grid" id="modulesGrid"></div>
+
+        <h2 class="section-h2">Quick actions</h2>
+        <div class="quick-actions">
+          <button class="quick-action" data-goto="automod">
+            <div class="qa-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4v6c0 5-3 8-7 10-4-2-7-5-7-10V6l7-4z"/></svg></div>
+            <div><strong>Configure AutoMod</strong><span>Blocked words & filters</span></div>
+          </button>
+          <button class="quick-action" data-goto="welcome">
+            <div class="qa-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div><strong>Setup Welcome</strong><span>Greet new members</span></div>
+          </button>
+          <button class="quick-action" data-goto="tickets">
+            <div class="qa-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 9V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3M3 9v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9M9 15h6"/></svg></div>
+            <div><strong>Deploy Tickets</strong><span>Support panel</span></div>
+          </button>
+          <button class="quick-action" data-goto="economy">
+            <div class="qa-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10"/></svg></div>
+            <div><strong>Economy</strong><span>Leaderboard & stats</span></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══ MODERATION ═══ -->
+      <div class="tab-panel" data-panel="moderation">
+        <div class="panel-head">
+          <h1 class="panel-title">Moderation</h1>
+          <p class="panel-sub">Server moderation tools — accessible directly from Discord using slash commands.</p>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          </div>
+          <div>
+            <strong>Moderation runs on Discord</strong>
+            <p>Stardust's moderation commands use native Discord permissions and are executed directly from your server. Every action requires confirmation and role hierarchy checks.</p>
+          </div>
+        </div>
+
+        <h2 class="section-h2">Available commands</h2>
+        <div class="cmd-list">
+          <div class="cmd-row"><code>/kick</code><span>Remove a member from the server</span><em>Kick Members</em></div>
+          <div class="cmd-row"><code>/ban</code><span>Permanently ban a member</span><em>Ban Members</em></div>
+          <div class="cmd-row"><code>/mute</code><span>Timeout a member for N minutes</span><em>Moderate Members</em></div>
+          <div class="cmd-row"><code>/warn</code><span>Issue a formal warning (DM + log)</span><em>Kick Members</em></div>
+          <div class="cmd-row"><code>/addrole</code><span>Add a role to a member</span><em>Manage Roles</em></div>
+          <div class="cmd-row"><code>/removerole</code><span>Remove a role from a member</span><em>Manage Roles</em></div>
+        </div>
+      </div>
+
+      <!-- ═══ AUTOMOD ═══ -->
+      <div class="tab-panel" data-panel="automod">
+        <div class="panel-head">
+          <h1 class="panel-title">AutoMod</h1>
+          <p class="panel-sub">Block inappropriate words and messages automatically.</p>
+        </div>
+
+        <div class="form-card">
+          <div class="form-row form-row-toggle">
+            <div>
+              <label class="form-label">AutoMod protection</label>
+              <p class="form-hint">When enabled, messages containing blocked words are auto-deleted with a temporary warning.</p>
+            </div>
+            <button class="toggle" id="automodToggle" role="switch" aria-checked="true">
+              <span class="toggle-knob"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="card-head">
+            <h3>Blocked words</h3>
+            <span class="card-count" id="wordCount">0</span>
+          </div>
+
+          <div class="word-add-row">
+            <input type="text" id="wordInput" placeholder="Enter a word or phrase…" maxlength="64">
+            <button class="btn btn-primary" id="wordAddBtn">Add word</button>
+          </div>
+
+          <div class="word-chips" id="wordChips"></div>
+
+          <div class="empty-mini" id="wordEmpty" hidden>
+            No blocked words configured. Add your first word above.
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ WELCOME ═══ -->
+      <div class="tab-panel" data-panel="welcome">
+        <div class="panel-head">
+          <h1 class="panel-title">Welcome & Leave</h1>
+          <p class="panel-sub">Greet new members and announce when someone leaves.</p>
+        </div>
+
+        <div class="form-card">
+          <div class="form-row">
+            <label class="form-label">Welcome channel</label>
+            <p class="form-hint">Where welcome cards are posted when a new member joins.</p>
+            <select class="form-select" id="welcomeChannel">
+              <option value="">— Not configured —</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" id="welcomeSaveBtn">Save changes</button>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-row">
+            <label class="form-label">Level-up announcement channel</label>
+            <p class="form-hint">Where level-up cards are posted.</p>
+            <select class="form-select" id="levelChannelSelect">
+              <option value="">— Not configured —</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Level-up message</label>
+            <p class="form-hint">Use <code>{member}</code> to mention the member.</p>
+            <input type="text" class="form-input" id="levelMessageInput" placeholder="GG {member}!" maxlength="200">
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" id="levelSaveBtn">Save changes</button>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-row">
+            <label class="form-label">Reward channel</label>
+            <p class="form-hint">Channel where random chat rewards are posted.</p>
+            <select class="form-select" id="rewardChannelSelect">
+              <option value="">— Not configured —</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" id="rewardSaveBtn">Save changes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TICKETS ═══ -->
+      <div class="tab-panel" data-panel="tickets">
+        <div class="panel-head">
+          <h1 class="panel-title">Tickets</h1>
+          <p class="panel-sub">Deploy a support panel so members can open private tickets.</p>
+        </div>
+
+        <div class="form-card">
+          <div class="form-row">
+            <label class="form-label">Panel channel</label>
+            <p class="form-hint">The channel where the ticket launcher panel will be posted.</p>
+            <select class="form-select" id="ticketPanelChannel">
+              <option value="">— Select a channel —</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" id="ticketDeployBtn">Deploy panel</button>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          </div>
+          <div>
+            <strong>Custom ticket settings</strong>
+            <p>For advanced ticket configuration (custom welcome message, staff role, transcripts), use <code>/ticket_config</code> in your server.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ECONOMY ═══ -->
+      <div class="tab-panel" data-panel="economy">
+        <div class="panel-head">
+          <h1 class="panel-title">Economy</h1>
+          <p class="panel-sub">Top members by Stardust Coins.</p>
+        </div>
+
+        <div class="lb-card">
+          <div class="lb-head">
+            <h3>Wealth leaderboard</h3>
+            <span class="card-count">Top 20</span>
+          </div>
+          <div id="economyLb"></div>
+        </div>
+      </div>
+
+      <!-- ═══ LEVELING ═══ -->
+      <div class="tab-panel" data-panel="leveling">
+        <div class="panel-head">
+          <h1 class="panel-title">Leveling</h1>
+          <p class="panel-sub">XP, ranks and progression tiers.</p>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>
+          </div>
+          <div>
+            <strong>Free Fire–style tier system</strong>
+            <p>Members gain XP by chatting (60s cooldown per user). Tiers progress from Bronze I up to Grandmaster. Use <code>/rank</code> to view rank cards.</p>
+          </div>
+        </div>
+
+        <h2 class="section-h2">Tiers</h2>
+        <div class="tier-list">
+          <div class="tier-row"><span>🥉 Bronze I</span><em>Level 1–4</em></div>
+          <div class="tier-row"><span>🥉 Bronze II</span><em>Level 5–9</em></div>
+          <div class="tier-row"><span>🥈 Silver I</span><em>Level 10–14</em></div>
+          <div class="tier-row"><span>🥈 Silver II</span><em>Level 15–19</em></div>
+          <div class="tier-row"><span>🥇 Gold I</span><em>Level 20–24</em></div>
+          <div class="tier-row"><span>🥇 Gold II</span><em>Level 25–29</em></div>
+          <div class="tier-row"><span>💎 Platinum I</span><em>Level 30–34</em></div>
+          <div class="tier-row"><span>💎 Platinum II</span><em>Level 35–39</em></div>
+          <div class="tier-row"><span>💎 Diamond I</span><em>Level 40–44</em></div>
+          <div class="tier-row"><span>💎 Diamond II</span><em>Level 45–49</em></div>
+          <div class="tier-row"><span>🏆 Heroic</span><em>Level 50–59</em></div>
+          <div class="tier-row"><span>👑 Grandmaster</span><em>Level 60+</em></div>
+        </div>
+      </div>
+
+      <!-- ═══ GIVEAWAYS ═══ -->
+      <div class="tab-panel" data-panel="giveaways">
+        <div class="panel-head">
+          <h1 class="panel-title">Giveaways</h1>
+          <p class="panel-sub">Launch a giveaway that members enter by reacting with 🎉.</p>
+        </div>
+
+        <div class="form-card">
+          <div class="form-row">
+            <label class="form-label">Prize</label>
+            <input type="text" class="form-input" id="gwPrize" placeholder="e.g. Nitro Classic" maxlength="120">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-row">
+              <label class="form-label">Duration</label>
+              <input type="text" class="form-input" id="gwDuration" placeholder="30m / 2h / 1d" maxlength="8">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Winners</label>
+              <input type="number" class="form-input" id="gwWinners" value="1" min="1" max="20">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Channel</label>
+            <select class="form-select" id="gwChannel">
+              <option value="">— Select a channel —</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" id="gwStartBtn">Start giveaway</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ LOGGING ═══ -->
+      <div class="tab-panel" data-panel="logging">
+        <div class="panel-head">
+          <h1 class="panel-title">Logging</h1>
+          <p class="panel-sub">Route server events to a dedicated log channel.</p>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          </div>
+          <div>
+            <strong>Event logging status</strong>
+            <p>Stardust has a built-in logging module (message deletes, edits, voice joins). Configuration is currently done directly from the bot.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ EMBEDS ═══ -->
+      <div class="tab-panel" data-panel="embeds">
+        <div class="panel-head">
+          <h1 class="panel-title">Embed Builder</h1>
+          <p class="panel-sub">Compose and send a custom embed to any channel.</p>
+        </div>
+
+        <div class="form-card">
+          <div class="form-row">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-input" id="emTitle" maxlength="256" placeholder="Announcement">
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Description</label>
+            <textarea class="form-textarea" id="emDescription" rows="4" maxlength="2000" placeholder="Type your message…"></textarea>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-row">
+              <label class="form-label">Color</label>
+              <input type="text" class="form-input" id="emColor" placeholder="#7c5cff" maxlength="7">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Image URL (optional)</label>
+              <input type="text" class="form-input" id="emImage" placeholder="https://…">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Target channel</label>
+            <select class="form-select" id="emChannel">
+              <option value="">— Select a channel —</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-secondary" id="emPreviewBtn">Preview</button>
+            <button class="btn btn-primary" id="emSendBtn">Send embed</button>
+          </div>
+        </div>
+
+        <div class="embed-preview-wrap" id="emPreviewWrap" hidden>
+          <label class="form-label">Preview</label>
+          <div class="discord-embed" id="emPreview">
+            <div class="discord-embed-bar" id="emPreviewBar"></div>
+            <div class="discord-embed-body">
+              <div class="discord-embed-title" id="emPreviewTitle"></div>
+              <div class="discord-embed-desc" id="emPreviewDesc"></div>
+              <div class="discord-embed-img" id="emPreviewImgWrap" hidden>
+                <img id="emPreviewImg" src="" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ COMMANDS ═══ -->
+      <div class="tab-panel" data-panel="commands">
+        <div class="panel-head">
+          <h1 class="panel-title">Commands</h1>
+          <p class="panel-sub">All Stardust slash commands, grouped by category.</p>
+        </div>
+        <div id="commandsGrid" class="commands-grid"></div>
+      </div>
+
+      <!-- ═══ SETTINGS ═══ -->
+      <div class="tab-panel" data-panel="settings">
+        <div class="panel-head">
+          <h1 class="panel-title">Server settings</h1>
+          <p class="panel-sub">Information and diagnostics for Stardust on this server.</p>
+        </div>
+
+        <div class="form-card">
+          <div class="kv-row"><span>Server ID</span><code id="setGuildId">—</code></div>
+          <div class="kv-row"><span>Bot presence</span><span id="setBotPresence">—</span></div>
+          <div class="kv-row"><span>Bot latency</span><span id="setBotLatency">—</span></div>
+        </div>
+
+        <div class="danger-zone">
+          <h3>Danger zone</h3>
+          <p>Removing Stardust will disable all modules on this server. You can re-invite at any time.</p>
+          <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="btn btn-secondary">Re-invite bot</a>
+        </div>
+      </div>
+
+    </section>
+  </main>
+</div>
+
+<!-- ═══════════ TOAST ═══════════ -->
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<!-- ═══════════ CONFIRM MODAL ═══════════ -->
+<div class="modal-overlay" id="modalOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3 class="modal-title" id="modalTitle">Confirm</h3>
+    <p class="modal-body" id="modalBody">Are you sure?</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="modalCancel">Cancel</button>
+      <button class="btn btn-primary" id="modalConfirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script src="api.js"></script>
+<script src="app.js"></script>
+<script src="server.js"></script>
+</body>
+</html>

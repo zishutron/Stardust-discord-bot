@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentation — Stardust</title>
+<meta name="description" content="Stardust documentation — get started, configure modules, and troubleshoot.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="pages.css">
+</head>
+<body>
+
+<header class="site-header" id="siteHeader">
+  <div class="container header-inner">
+    <a href="index.html" class="brand">
+      <img class="brand-mark" src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png" alt="Stardust" width="32" height="32">
+      <span class="brand-name">Stardust</span>
+    </a>
+    <nav class="nav-desktop" aria-label="Main">
+      <a href="features.html">Features</a>
+      <a href="commands.html">Commands</a>
+      <a href="docs.html">Docs</a>
+      <a href="status.html">Status</a>
+      <a href="support.html">Support</a>
+    </nav>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="#" class="btn btn-ghost login-btn">Login</a>
+      <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" class="btn btn-primary" target="_blank" rel="noopener">Add to Discord</a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-header">
+    <a href="index.html" class="brand">
+      <img class="brand-mark" src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png" alt="Stardust" width="28" height="28">
+      <span class="brand-name">Stardust</span>
+    </a>
+    <button class="drawer-close" id="drawerClose" aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <nav class="drawer-nav">
+    <a href="features.html">Features</a>
+    <a href="commands.html">Commands</a>
+    <a href="docs.html">Docs</a>
+    <a href="status.html">Status</a>
+    <a href="support.html">Support</a>
+  </nav>
+  <div class="drawer-actions">
+    <a href="#" class="btn btn-ghost login-btn">Login with Discord</a>
+    <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" class="btn btn-primary" target="_blank" rel="noopener">Add to Discord</a>
+  </div>
+</aside>
+
+<div class="doc-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="doc-sidebar">
+    <h4>Getting Started</h4>
+    <a href="#intro" class="active">Introduction</a>
+    <a href="#invite">Adding Stardust</a>
+    <a href="#dashboard">Using the dashboard</a>
+
+    <h4>Modules</h4>
+    <a href="#moderation">Moderation</a>
+    <a href="#automod">AutoMod</a>
+    <a href="#welcome">Welcome & Leave</a>
+    <a href="#tickets">Tickets</a>
+    <a href="#economy">Economy</a>
+    <a href="#leveling">Leveling</a>
+    <a href="#giveaways">Giveaways</a>
+    <a href="#embeds">Embed Builder</a>
+
+    <h4>Reference</h4>
+    <a href="#permissions">Permissions</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+    <a href="#faq">FAQ</a>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="doc-content">
+
+    <section id="intro">
+      <h2>Introduction</h2>
+      <p class="pg-text">Stardust is a multi-purpose Discord bot that brings moderation, automation, tickets, economy, leveling, and community tools together in a single, cohesive system.</p>
+      <p class="pg-text">Everything Stardust does is managed from one place: your server's Discord commands and the Stardust web dashboard. There is no separate CLI, no plugin install, no local software to run.</p>
+      <div class="pg-note">
+        <div class="pg-note-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        </div>
+        <p>You need the <strong>Manage Server</strong> or <strong>Administrator</strong> permission to configure Stardust on a server.</p>
+      </div>
+    </section>
+
+    <section id="invite">
+      <h2>Adding Stardust</h2>
+      <p class="pg-text">Adding Stardust to your Discord server takes under 30 seconds:</p>
+      <ul class="pg-list">
+        <li>Click the <strong>Add to Discord</strong> button in the header.</li>
+        <li>Choose a server where you have <strong>Manage Server</strong> permission.</li>
+        <li>Review the requested permissions and authorize.</li>
+        <li>Stardust will appear in your member list. You can verify it with <code>/ping</code>.</li>
+      </ul>
+      <p class="pg-text">The bot requests administrator permissions to cover all features. If you prefer least-privilege, disable specific scopes you don't need after the install.</p>
+    </section>
+
+    <section id="dashboard">
+      <h2>Using the dashboard</h2>
+      <p class="pg-text">The Stardust dashboard gives you a clean UI for every configuration that would otherwise require dozens of commands. To access it:</p>
+      <ul class="pg-list">
+        <li>Click <strong>Login</strong> in the site header.</li>
+        <li>Authorize with your Discord account.</li>
+        <li>You'll be redirected to <strong>Your Servers</strong>.</li>
+        <li>Click <strong>Manage</strong> on any server where you have admin access.</li>
+      </ul>
+      <p class="pg-text">Every change you make is saved immediately to the Stardust backend and applied to the bot in real time.</p>
+    </section>
+
+    <section id="moderation">
+      <h2>Moderation</h2>
+      <p class="pg-text">Stardust's moderation commands are native Discord slash commands. They respect Discord's permission system exactly as you'd expect.</p>
+      <h3>Commands</h3>
+      <pre class="pg-code">/kick [member] [reason]
+/ban [member] [reason]
+/mute [member] [minutes] [reason]
+/warn [member] [reason]
+/addrole [member] [role]
+/removerole [member] [role]</pre>
+      <div class="pg-note">
+        <div class="pg-note-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        </div>
+        <p>The bot's role must be <strong>higher</strong> than the target's highest role for kick, ban, and timeout to work.</p>
+      </div>
+    </section>
+
+    <section id="automod">
+      <h2>AutoMod</h2>
+      <p class="pg-text">AutoMod watches every message in your server and deletes any that contain blocked words.</p>
+      <ul class="pg-list">
+        <li>Configure the block list from the dashboard — <strong>AutoMod</strong> tab.</li>
+        <li>Toggle the entire system on/off with a single switch.</li>
+        <li>Warnings are ephemeral (removed after 4 seconds).</li>
+      </ul>
+    </section>
+
+    <section id="welcome">
+      <h2>Welcome & Leave</h2>
+      <p class="pg-text">Announce new arrivals with a rich embed card and notify members when someone leaves.</p>
+      <pre class="pg-code">/welcome-set [#channel]      # Set welcome channel
+/welcome-test                # Test the welcome card
+/welcome-reset               # Disable welcome</pre>
+      <p class="pg-text">You can also configure the level-up channel and message from the dashboard's <strong>Welcome</strong> tab.</p>
+    </section>
+
+    <section id="tickets">
+      <h2>Tickets</h2>
+      <p class="pg-text">Deploy a professional support panel in seconds. Members click a button, and Stardust opens a private channel for them.</p>
+      <pre class="pg-code">/ticket_setup [#channel]                    # Deploy the panel
+/ticket_config [panel_description] [welcome_title] [welcome_message] [staff_role]</pre>
+      <ul class="pg-list">
+        <li>Staff can claim tickets with the <strong>Claim</strong> button.</li>
+        <li>Closing a ticket generates a transcript saved to <code>#ticket-logs</code>.</li>
+        <li>Only the ticket owner and configured staff role can access each channel.</li>
+      </ul>
+    </section>
+
+    <section id="economy">
+      <h2>Economy</h2>
+      <p class="pg-text">Stardust comes with a fully functional economy. Members earn coins by being active, and spend them on premium items.</p>
+      <pre class="pg-code">/daily         # Claim 200 coins (24h cooldown)
+/wallet        # View balance
+/menu          # View food menu
+/shop          # Browse shop items
+/buy [item]    # Purchase an item
+/inventory     # View your items
+/serve [item] [member]   # Serve a dish</pre>
+      <p class="pg-text">Admins can also configure a reward channel from the dashboard so random coin drops appear there.</p>
+    </section>
+
+    <section id="leveling">
+      <h2>Leveling</h2>
+      <p class="pg-text">Members gain XP for every message they send (60-second cooldown per user). When they level up, Stardust generates a custom rank-up card.</p>
+      <pre class="pg-code">/rank                     # View your rank card
+/level-set-channel [#ch]  # Set level-up channel
+/level-set-msg [message]  # Customize level-up message</pre>
+      <p class="pg-text">Tiers progress from 🥉 Bronze I at level 1 up to 👑 Grandmaster at level 60+.</p>
+    </section>
+
+    <section id="giveaways">
+      <h2>Giveaways</h2>
+      <p class="pg-text">Reaction-based giveaways with automatic winner selection.</p>
+      <pre class="pg-code">/gstart [duration] [winners] [prize]</pre>
+      <p class="pg-text">Duration supports <code>30m</code>, <code>5h</code>, <code>1d</code> formats.</p>
+    </section>
+
+    <section id="embeds">
+      <h2>Embed Builder</h2>
+      <p class="pg-text">Compose custom embeds without leaving Discord, or use the dashboard's interactive embed builder with a live Discord-style preview.</p>
+      <pre class="pg-code">/embed_builder [#channel]   # Opens an interactive modal</pre>
+    </section>
+
+    <section id="permissions">
+      <h2>Permissions</h2>
+      <p class="pg-text">Stardust requests the following permissions during install. You can remove any you don't need after installation.</p>
+      <ul class="pg-list">
+        <li><strong>Manage Server</strong> — read server metadata, list channels</li>
+        <li><strong>Manage Roles</strong> — for role management commands</li>
+        <li><strong>Manage Channels</strong> — for ticket channel creation</li>
+        <li><strong>Kick Members</strong> — for <code>/kick</code>, <code>/warn</code></li>
+        <li><strong>Ban Members</strong> — for <code>/ban</code></li>
+        <li><strong>Moderate Members</strong> — for <code>/mute</code> (timeout)</li>
+        <li><strong>Manage Messages</strong> — for AutoMod deletion</li>
+        <li><strong>Send Messages</strong> + <strong>Embed Links</strong> — required for all output</li>
+        <li><strong>Attach Files</strong> — for rank cards and level-up cards</li>
+      </ul>
+    </section>
+
+    <section id="troubleshooting">
+      <h2>Troubleshooting</h2>
+      <h3>Bot doesn't respond to commands</h3>
+      <ul class="pg-list">
+        <li>Verify Stardust is online with <code>/ping</code>.</li>
+        <li>Check that the bot has the required permission for that command.</li>
+        <li>Confirm the bot's role is higher than the target's highest role (for moderation actions).</li>
+      </ul>
+      <h3>Dashboard says "Backend unavailable"</h3>
+      <ul class="pg-list">
+        <li>The backend is hosted on Render's free tier, which sleeps after inactivity.</li>
+        <li>Wait ~30 seconds and try again — the server is waking up.</li>
+        <li>If it persists, contact support.</li>
+      </ul>
+      <h3>Login redirects back without logging in</h3>
+      <ul class="pg-list">
+        <li>Ensure cookies are enabled for both <code>zishutron.github.io</code> and <code>stardust-bot.onrender.com</code>.</li>
+        <li>Try logging out and logging in again.</li>
+      </ul>
+    </section>
+
+    <section id="faq">
+      <h2>Frequently asked questions</h2>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-q">
+            Is Stardust free?
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a">Yes. Every feature is available to every server at no cost.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">
+            Do I need to host anything myself?
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a">No. Just add Stardust to your server — the bot and dashboard run on our infrastructure.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">
+            Can I configure multiple servers?
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a">Yes. Once logged in, you can switch between every server where you have administrator access.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">
+            Does Stardust store my data?
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a">Stardust only stores what's needed to run its features: server IDs, channel IDs, role IDs, and per-user economy/XP data. No message content is permanently stored.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">
+            How do I remove Stardust?
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a">Server Settings → Integrations → Stardust → Remove. All server-specific data is deleted within 30 days.</div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img class="brand-mark" src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png" alt="Stardust" width="28" height="28">
+          <span class="brand-name">Stardust</span>
+        </a>
+        <p>Powerful tools for better Discord communities.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="features.html">Features</a>
+        <a href="commands.html">Commands</a>
+        <a href="docs.html">Documentation</a>
+        <a href="status.html">Status</a>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <a href="support.html">Support server</a>
+        <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener">Add to Discord</a>
+        <a href="#" class="login-btn">Dashboard</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Stardust. All rights reserved.</span>
+      <span class="footer-status">
+        <span class="dot" id="footerStatusDot"></span>
+        <span id="footerStatusText">Checking status…</span>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<script>
+(function () {
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(function (q) {
+    q.addEventListener('click', function () {
+      q.parentElement.classList.toggle('open');
+    });
+  });
+
+  // Scroll spy
+  var links = document.querySelectorAll('.doc-sidebar a');
+  var sections = document.querySelectorAll('.doc-content > section');
+  function update() {
+    var y = window.scrollY + 120;
+    var current = sections[0] ? sections[0].id : null;
+    sections.forEach(function (s) {
+      if (s.offsetTop <= y) current = s.id;
+    });
+    links.forEach(function (l) {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+
+  // Smooth scroll on sidebar clicks
+  links.forEach(function (l) {
+    l.addEventListener('click', function (e) {
+      var href = l.getAttribute('href');
+      if (!href || href.charAt(0) !== '#') return;
+      var target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      window.scrollTo({ top: target.offsetTop - 88, behavior: 'smooth' });
+      history.replaceState({}, '', href);
+    });
+  });
+})();
+</script>
+
+<script src="api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

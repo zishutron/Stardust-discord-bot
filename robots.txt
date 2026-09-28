@@ -1,0 +1,28 @@
+# ═══════════════════════════════════════════════════════════
+# Stardust — robots.txt
+# ═══════════════════════════════════════════════════════════
+
+User-agent: *
+Allow: /
+
+# Public pages are fully crawlable
+Allow: /index.html
+Allow: /features.html
+Allow: /commands.html
+Allow: /docs.html
+Allow: /status.html
+Allow: /support.html
+Allow: /terms.html
+Allow: /privacy.html
+
+# Dashboard is private — do not index
+Disallow: /dashboard.html
+Disallow: /server.html
+Disallow: /dashboard
+Disallow: /server
+
+# API is backend-only
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://zishutron.github.io/Stardust-discord-bot/sitemap.xml

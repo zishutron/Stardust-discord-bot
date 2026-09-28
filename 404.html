@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Page not found | Stardust</title>
+<meta name="description" content="The page you're looking for doesn't exist.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="pages.css">
+<style>
+  .error-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .error-code {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(5rem, 14vw, 10rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--text);
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .error-title {
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .error-msg {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 460px;
+    margin-bottom: 32px;
+  }
+  .error-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 60px;
+  }
+  .error-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    max-width: 640px;
+    width: 100%;
+  }
+  .error-links a {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    transition: color var(--transition);
+  }
+  .error-links a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="error-page">
+
+  <a href="index.html" class="brand" style="margin-bottom: 48px;">
+    <img class="brand-mark" src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png" alt="Stardust" width="36" height="36">
+    <span class="brand-name" style="font-size: 17px;">Stardust</span>
+  </a>
+
+  <div class="error-code">404</div>
+  <h1 class="error-title">We couldn't find that page</h1>
+  <p class="error-msg">The page you're looking for may have been moved, deleted, or never existed in the first place.</p>
+
+  <div class="error-actions">
+    <a href="index.html" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back home
+    </a>
+    <a href="dashboard.html" class="btn btn-secondary">Open dashboard</a>
+    <a href="support.html" class="btn btn-secondary">Get help</a>
+  </div>
+
+  <div class="error-links">
+    <a href="features.html">Features</a>
+    <a href="commands.html">Commands</a>
+    <a href="docs.html">Documentation</a>
+    <a href="status.html">Status</a>
+    <a href="support.html">Support</a>
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+  </div>
+
+</div>
+
+<script>
+  // Apply theme from localStorage (no dependency on api.js / app.js)
+  (function () {
+    try {
+      var saved = localStorage.getItem('stardust_theme');
+      if (saved === 'light' || saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', saved);
+      } else {
+        var prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        document.documentElement.setAttribute('data-theme', prefersLight ? 'light' : 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+
+</body>
+</html>

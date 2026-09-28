@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commands — Stardust</title>
+<meta name="description" content="Browse every Stardust slash command — moderation, economy, tickets, leveling, games, and utilities.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="pages.css">
+</head>
+<body>
+
+<header class="site-header" id="siteHeader">
+  <div class="container header-inner">
+    <a href="index.html" class="brand">
+      <img class="brand-mark" src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png" alt="Stardust" width="32" height="32">
+      <span class="brand-name">Stardust</span>
+    </a>
+    <nav class="nav-desktop" aria-label="Main">
+      <a href="features.html">Features</a>
+      <a href="commands.html">Commands</a>
+      <a href="docs.html">Docs</a>
+      <a href="status.html">Status</a>
+      <a href="support.html">Support</a>
+    </nav>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="#" class="btn btn-ghost login-btn">Login</a>
+      <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" class="btn btn-primary" target="_blank" rel="noopener">Add to Discord</a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-header">
+    <a href="index.html" class="brand">
+      <img class="brand-mark" src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png" alt="Stardust" width="28" height="28">
+      <span class="brand-name">Stardust</span>
+    </a>
+    <button class="drawer-close" id="drawerClose" aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <nav class="drawer-nav">
+    <a href="features.html">Features</a>
+    <a href="commands.html">Commands</a>
+    <a href="docs.html">Docs</a>
+    <a href="status.html">Status</a>
+    <a href="support.html">Support</a>
+  </nav>
+  <div class="drawer-actions">
+    <a href="#" class="btn btn-ghost login-btn">Login with Discord</a>
+    <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" class="btn btn-primary" target="_blank" rel="noopener">Add to Discord</a>
+  </div>
+</aside>
+
+<section class="page-hero">
+  <div class="container page-hero-inner">
+    <span class="section-eyebrow">Commands</span>
+    <h1>Every command, in one place.</h1>
+    <p>Search, filter, and explore Stardust's full slash command set. Everything runs natively on Discord.</p>
+  </div>
+</section>
+
+<main class="page-body">
+  <div class="page-container">
+
+    <div class="cmd-search-wrap">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" class="cmd-search" id="cmdSearch" placeholder="Search commands…" autocomplete="off" aria-label="Search commands">
+    </div>
+
+    <div class="cmd-cat-tabs" id="cmdCats"></div>
+
+    <div class="cmd-grid" id="cmdGrid"></div>
+
+    <div class="cmd-empty" id="cmdEmpty" hidden>No commands match your search.</div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img class="brand-mark" src="https://i.ibb.co/3m3NJCYx/file-000000004894820eb5ce43234689dee1-removebg-preview.png" alt="Stardust" width="28" height="28">
+          <span class="brand-name">Stardust</span>
+        </a>
+        <p>Powerful tools for better Discord communities.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="features.html">Features</a>
+        <a href="commands.html">Commands</a>
+        <a href="docs.html">Documentation</a>
+        <a href="status.html">Status</a>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <a href="support.html">Support server</a>
+        <a href="https://discord.com/oauth2/authorize?client_id=1517046273037832342&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener">Add to Discord</a>
+        <a href="#" class="login-btn">Dashboard</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Stardust. All rights reserved.</span>
+      <span class="footer-status">
+        <span class="dot" id="footerStatusDot"></span>
+        <span id="footerStatusText">Checking status…</span>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<!-- ═══ Commands registry + renderer ═══ -->
+<script>
+(function () {
+  'use strict';
+
+  var COMMANDS = [
+    // Moderation
+    { name: '/kick',         cat: 'Moderation', desc: 'Kick a member from the server.', perms: ['Kick Members'], options: ['member', 'reason'] },
+    { name: '/ban',          cat: 'Moderation', desc: 'Permanently ban a member.', perms: ['Ban Members'], options: ['member', 'reason'] },
+    { name: '/mute',         cat: 'Moderation', desc: 'Timeout a member for N minutes.', perms: ['Moderate Members'], options: ['member', 'minutes', 'reason'] },
+    { name: '/warn',         cat: 'Moderation', desc: 'Issue a formal warning (DM + server card).', perms: ['Kick Members'], options: ['member', 'reason'] },
+    { name: '/addrole',      cat: 'Moderation', desc: 'Add a role to a member.', perms: ['Manage Roles'], options: ['member', 'role'] },
+    { name: '/removerole',   cat: 'Moderation', desc: 'Remove a role from a member.', perms: ['Manage Roles'], options: ['member', 'role'] },
+
+    // Welcome
+    { name: '/welcome-set',   cat: 'Welcome', desc: 'Map the greeting system to a text channel.', perms: ['Administrator'], options: ['channel'] },
+    { name: '/welcome-test',  cat: 'Welcome', desc: 'Trigger a simulated welcome card.', perms: ['Administrator'], options: [] },
+    { name: '/welcome-reset', cat: 'Welcome', desc: 'Disable the welcome module.', perms: ['Administrator'], options: [] },
+
+    // Leveling
+    { name: '/level-set-channel', cat: 'Leveling', desc: 'Set the level-up announcement channel.', perms: ['Administrator'], options: ['channel'] },
+    { name: '/level-set-msg',     cat: 'Leveling', desc: 'Customize the level-up message.', perms: ['Administrator'], options: ['message'] },
+    { name: '/rank',              cat: 'Leveling', desc: 'Display your rank card.', perms: [], options: ['member (optional)'] },
+    { name: '/richest',           cat: 'Leveling', desc: 'Top 10 richest members by coins.', perms: [], options: [] },
+
+    // Economy
+    { name: '/daily',      cat: 'Economy', desc: 'Claim your daily Stardust reward.', perms: [], options: [] },
+    { name: '/wallet',     cat: 'Economy', desc: 'View your Stardust balance.', perms: [], options: [] },
+    { name: '/menu',       cat: 'Economy', desc: 'View the global menu of dishes.', perms: [], options: [] },
+    { name: '/shop',       cat: 'Economy', desc: 'Browse the Stardust shop.', perms: [], options: [] },
+    { name: '/buy',        cat: 'Economy', desc: 'Purchase an item from the shop.', perms: [], options: ['item_id'] },
+    { name: '/inventory',  cat: 'Economy', desc: 'View your inventory of items.', perms: [], options: [] },
+    { name: '/serve',      cat: 'Economy', desc: 'Serve a premium meal to a member.', perms: [], options: ['item', 'member'] },
+    { name: '/reward-set',   cat: 'Economy', desc: 'Set the reward channel for random coin drops.', perms: ['Administrator'], options: ['channel'] },
+    { name: '/reward-test',  cat: 'Economy', desc: 'Trigger a simulated reward post.', perms: ['Administrator'], options: [] },
+    { name: '/reward-reset', cat: 'Economy', desc: 'Disable the reward module.', perms: ['Administrator'], options: [] },
+
+    // Tickets
+    { name: '/ticket_setup',  cat: 'Tickets', desc: 'Deploy the ticket launcher panel.', perms: ['Administrator'], options: ['channel'] },
+    { name: '/ticket_config', cat: 'Tickets', desc: 'Customize the ticket panel and welcome message.', perms: ['Administrator'], options: ['panel_description', 'welcome_title', 'welcome_message', 'staff_role'] },
+
+    // Giveaways
+    { name: '/gstart', cat: 'Giveaways', desc: 'Start a new giveaway with reactions.', perms: ['Manage Server'], options: ['duration', 'winners', 'prize'] },
+
+    // Embed / Utilities
+    { name: '/embed_builder', cat: 'Utilities', desc: 'Interactive modal to compose a custom embed.', perms: ['Manage Messages'], options: ['channel'] },
+    { name: '/matrixpoll',    cat: 'Utilities', desc: 'Start a reaction poll in the current channel.', perms: [], options: ['topic'] },
+    { name: '/remindme',      cat: 'Utilities', desc: 'Set a one-time reminder for yourself.', perms: [], options: ['time', 'text'] },
+    { name: '/afk',           cat: 'Utilities', desc: 'Set your AFK status with a reason.', perms: [], options: ['reason'] },
+    { name: '/stardustquote', cat: 'Utilities', desc: 'Get a random inspirational tech quote.', perms: [], options: [] },
+    { name: '/rollmatrix',    cat: 'Utilities', desc: 'Roll a random number between 1 and 100.', perms: [], options: [] },
+    { name: '/ping',          cat: 'Utilities', desc: 'Check the bot latency.', perms: [], options: [] },
+    { name: '/help',          cat: 'Utilities', desc: 'View all available commands.', perms: [], options: [] },
+
+    // Games / Anime
+    { name: '/play_rps',   cat: 'Games', desc: 'Play Rock Paper Scissors with a member or the bot.', perms: [], options: ['opponent (optional)'] },
+    { name: '/play_ttt',   cat: 'Games', desc: 'Play Tic Tac Toe with a member or the bot.', perms: [], options: ['opponent (optional)'] },
+    { name: '/play_slap',  cat: 'Games', desc: 'Start a slap fight with a member or the bot.', perms: [], options: ['opponent (optional)'] },
+    { name: '/hug',        cat: 'Games', desc: 'Send an anime hug to a member.', perms: [], options: ['member'] },
+    { name: '/kiss',       cat: 'Games', desc: 'Send an anime kiss to a member.', perms: [], options: ['member'] },
+    { name: '/slap',       cat: 'Games', desc: 'Slap a member with an anime GIF.', perms: [], options: ['member'] }
+  ];
+
+  var CATEGORIES = ['All', 'Moderation', 'Welcome', 'Leveling', 'Economy', 'Tickets', 'Giveaways', 'Utilities', 'Games'];
+  var state = { cat: 'All', query: '' };
+
+  var grid = document.getElementById('cmdGrid');
+  var empty = document.getElementById('cmdEmpty');
+  var tabs = document.getElementById('cmdCats');
+  var search = document.getElementById('cmdSearch');
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+
+  function renderTabs() {
+    tabs.innerHTML = CATEGORIES.map(function (c) {
+      return '<button class="cmd-cat-tab' + (c === state.cat ? ' active' : '') + '" data-cat="' + esc(c) + '">' + esc(c) + '</button>';
+    }).join('');
+    tabs.querySelectorAll('.cmd-cat-tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.cat = btn.dataset.cat;
+        renderTabs();
+        render();
+      });
+    });
+  }
+
+  function render() {
+    var q = state.query.toLowerCase().trim();
+    var filtered = COMMANDS.filter(function (c) {
+      if (state.cat !== 'All' && c.cat !== state.cat) return false;
+      if (q && (c.name.toLowerCase().indexOf(q) === -1 && c.desc.toLowerCase().indexOf(q) === -1)) return false;
+      return true;
+    });
+
+    if (!filtered.length) {
+      grid.innerHTML = '';
+      empty.hidden = false;
+      return;
+    }
+    empty.hidden = true;
+
+    grid.innerHTML = filtered.map(function (c) {
+      var pills = '';
+      (c.perms || []).forEach(function (p) {
+        pills += '<span class="cmd-meta-pill">' + esc(p) + '</span>';
+      });
+      (c.options || []).forEach(function (o) {
+        pills += '<span class="cmd-meta-pill">' + esc(o) + '</span>';
+      });
+      return (
+        '<div class="cmd-item">' +
+          '<div class="cmd-item-head"><code>' + esc(c.name) + '</code></div>' +
+          '<p>' + esc(c.desc) + '</p>' +
+          (pills ? '<div class="cmd-meta">' + pills + '</div>' : '') +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  var debounceT = null;
+  if (search) {
+    search.addEventListener('input', function () {
+      clearTimeout(debounceT);
+      debounceT = setTimeout(function () {
+        state.query = search.value || '';
+        render();
+      }, 100);
+    });
+  }
+
+  renderTabs();
+  render();
+})();
+</script>
+
+<script src="api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,33 +1,22 @@
 /* ═══════════════════════════════════════════════════════════
-   STARDUST — Landing Page Behavior
-   Every subsystem runs in isolation — one failure never kills others.
+   STARDUST — Global page behavior (v2)
+   Auto-detects login, updates header buttons, theme, drawer.
    ═══════════════════════════════════════════════════════════ */
 
 (function () {
   'use strict';
 
-  function log() {
-    if (window.console) console.log.apply(console, ['[Stardust]'].concat(Array.prototype.slice.call(arguments)));
-  }
-  function warn() {
-    if (window.console) console.warn.apply(console, ['[Stardust]'].concat(Array.prototype.slice.call(arguments)));
-  }
+  function log() { if (window.console) console.log.apply(console, ['[Stardust]'].concat(Array.prototype.slice.call(arguments))); }
+  function warn() { if (window.console) console.warn.apply(console, ['[Stardust]'].concat(Array.prototype.slice.call(arguments))); }
 
-  // ─────────────────────────────────────────────
-  // SAFE SUBSYSTEM RUNNER — ek fail ho toh baaki chalein
-  // ─────────────────────────────────────────────
   function runSafe(name, fn) {
-    try {
-      fn();
-      log('✓', name);
-    } catch (err) {
-      warn('✗', name, '—', err && err.message);
-    }
+    try { fn(); log('✓', name); }
+    catch (err) { warn('✗', name, '—', err && err.message); }
   }
 
-  // ═════════════════════════════════════════════
-  // 1. THEME SYSTEM
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
+  // 1. THEME
+  // ─────────────────────────────────────────────
   function initTheme() {
     var root = document.documentElement;
     var KEY = 'stardust_theme';
@@ -35,35 +24,29 @@
     function apply(theme) {
       root.setAttribute('data-theme', theme);
       try { localStorage.setItem(KEY, theme); } catch (e) {}
-      var btn = document.getElementById('themeToggle');
-      if (btn) btn.setAttribute('aria-label', 'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' theme');
     }
 
-    // Initial theme
     var saved = null;
     try { saved = localStorage.getItem(KEY); } catch (e) {}
-    if (saved === 'light' || saved === 'dark') {
-      apply(saved);
-    } else {
+    if (saved === 'light' || saved === 'dark') apply(saved);
+    else {
       var prefersLight = false;
       try { prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches; } catch (e) {}
       apply(prefersLight ? 'light' : 'dark');
     }
 
-    // Toggle button — event delegation (works even if button added later)
     document.addEventListener('click', function (e) {
       var btn = e.target.closest && e.target.closest('#themeToggle');
       if (!btn) return;
       e.preventDefault();
-      var current = root.getAttribute('data-theme') || 'dark';
-      apply(current === 'dark' ? 'light' : 'dark');
-      log('Theme →', current === 'dark' ? 'light' : 'dark');
+      var cur = root.getAttribute('data-theme') || 'dark';
+      apply(cur === 'dark' ? 'light' : 'dark');
     });
   }
 
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
   // 2. HEADER SCROLL
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
   function initHeaderScroll() {
     var header = document.getElementById('siteHeader');
     if (!header) return;
@@ -75,16 +58,13 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
-  // ═════════════════════════════════════════════
-  // 3. MOBILE DRAWER
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
+  // 3. DRAWER
+  // ─────────────────────────────────────────────
   function initDrawer() {
     var drawer = document.getElementById('drawer');
     var overlay = document.getElementById('drawerOverlay');
-    if (!drawer || !overlay) {
-      warn('Drawer elements missing');
-      return;
-    }
+    if (!drawer || !overlay) return;
 
     function open() {
       drawer.classList.add('active');
@@ -99,47 +79,27 @@
       document.body.style.overflow = '';
     }
 
-    // Event delegation — button click par open, overlay click par close
     document.addEventListener('click', function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
-
-      if (t.closest('#menuToggle')) {
-        e.preventDefault();
-        open();
-        return;
-      }
-      if (t.closest('#drawerClose')) {
-        e.preventDefault();
-        close();
-        return;
-      }
-      if (t.closest('#drawerOverlay')) {
-        e.preventDefault();
-        close();
-        return;
-      }
-      // Click on any link inside drawer auto-closes
+      if (t.closest('#menuToggle')) { e.preventDefault(); open(); return; }
+      if (t.closest('#drawerClose')) { e.preventDefault(); close(); return; }
+      if (t.closest('#drawerOverlay')) { e.preventDefault(); close(); return; }
       var link = t.closest('#drawer a');
-      if (link) {
-        close();
-      }
+      if (link) close();
     });
-
-    // ESC key closes
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') close();
     });
   }
 
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
   // 4. SHOWCASE TABS
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
   function initShowcase() {
     var tabs = document.querySelectorAll('.showcase-tab');
     var panels = document.querySelectorAll('.showcase-panel');
     if (!tabs.length || !panels.length) return;
-
     tabs.forEach(function (tab) {
       tab.addEventListener('click', function () {
         var target = tab.dataset.tab;
@@ -153,48 +113,143 @@
     });
   }
 
-  // ═════════════════════════════════════════════
-  // 5. TOAST SYSTEM
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
+  // 5. TOAST
+  // ─────────────────────────────────────────────
   function initToast() {
     var stack = document.getElementById('toastStack');
     if (!stack) {
-      // Create one if missing
       stack = document.createElement('div');
       stack.id = 'toastStack';
       stack.className = 'toast-stack';
       stack.setAttribute('aria-live', 'polite');
       document.body.appendChild(stack);
     }
-
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, function (c) {
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
         return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
       });
     }
-
     function toast(message, type, timeout) {
       type = type || 'info';
       timeout = timeout || 4000;
       var el = document.createElement('div');
       el.className = 'toast ' + type;
       var icons = { success: '✓', error: '✕', info: 'i' };
-      el.innerHTML =
-        '<span class="toast-icon">' + (icons[type] || 'i') + '</span>' +
-        '<span>' + escapeHtml(message) + '</span>';
+      el.innerHTML = '<span class="toast-icon">' + (icons[type] || 'i') + '</span><span>' + esc(message) + '</span>';
       stack.appendChild(el);
       setTimeout(function () {
         el.classList.add('leaving');
         setTimeout(function () { el.remove(); }, 220);
       }, timeout);
     }
-
     window.stardustToast = toast;
   }
 
-  // ═════════════════════════════════════════════
-  // 6. LOGIN BUTTONS
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
+  // 6. USER SESSION — CACHE + HEADER UPDATE
+  // ─────────────────────────────────────────────
+  var SESSION_KEY = 'stardust_session_user';
+  var SESSION_MAX_AGE = 5 * 60 * 1000; // 5 min cache
+
+  function getCachedUser() {
+    try {
+      var raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      if (Date.now() - (obj.ts || 0) > SESSION_MAX_AGE) {
+        sessionStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+      return obj.user;
+    } catch (e) { return null; }
+  }
+  function setCachedUser(user) {
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ user: user, ts: Date.now() }));
+    } catch (e) {}
+  }
+  function clearCachedUser() {
+    try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+  }
+  window.stardustClearSession = clearCachedUser;
+
+  function userAvatarUrl(u, size) {
+    if (!u) return 'https://cdn.discordapp.com/embed/avatars/0.png';
+    var s = size || 64;
+    if (u.avatar) return 'https://cdn.discordapp.com/avatars/' + u.id + '/' + u.avatar + '.png?size=' + s;
+    return 'https://cdn.discordapp.com/embed/avatars/0.png';
+  }
+
+  function updateHeaderForUser(user) {
+    if (!user) return;
+    var name = user.global_name || user.username || 'User';
+    var av = userAvatarUrl(user, 64);
+
+    // Replace every .login-btn with an "avatar chip" + dropdown OR keep as link to dashboard
+    document.querySelectorAll('.login-btn').forEach(function (btn) {
+      btn.classList.remove('login-btn');
+      btn.classList.add('user-chip-btn');
+      btn.setAttribute('aria-haspopup', 'true');
+      btn.setAttribute('aria-expanded', 'false');
+
+      // Different rendering for <a> vs <button>
+      var isA = btn.tagName === 'A';
+      var href = isA ? 'dashboard.html' : null;
+
+      btn.innerHTML =
+        '<img class="user-chip-avatar" src="' + av + '" alt="">' +
+        '<span class="user-chip-name">' + escHtml(name) + '</span>' +
+        '<svg class="user-chip-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+      if (isA) btn.setAttribute('href', 'dashboard.html');
+    });
+
+    // Attach global handler for user-chip dropdown
+    document.addEventListener('click', function (e) {
+      var chip = e.target.closest && e.target.closest('.user-chip-btn');
+      if (chip) {
+        e.preventDefault();
+        e.stopPropagation();
+        var menu = document.getElementById('globalUserMenu');
+        if (!menu) {
+          menu = document.createElement('div');
+          menu.id = 'globalUserMenu';
+          menu.className = 'global-user-menu';
+          menu.innerHTML =
+            '<a href="dashboard.html" class="dropdown-item">My servers</a>' +
+            '<a href="support.html" class="dropdown-item">Support</a>' +
+            '<div class="dropdown-sep"></div>' +
+            '<button type="button" class="dropdown-item danger" id="globalLogoutBtn">Log out</button>';
+          document.body.appendChild(menu);
+          document.getElementById('globalLogoutBtn').addEventListener('click', async function (ev) {
+            ev.preventDefault();
+            try { await window.StardustAPI.logout(); } catch (er) {}
+            clearCachedUser();
+            window.location.href = 'index.html';
+          });
+        }
+        var rect = chip.getBoundingClientRect();
+        menu.style.top = (rect.bottom + 8) + 'px';
+        menu.style.right = (window.innerWidth - rect.right) + 'px';
+        menu.classList.add('open');
+        return;
+      }
+      var menu = document.getElementById('globalUserMenu');
+      if (menu && menu.classList.contains('open') && !e.target.closest('#globalUserMenu')) {
+        menu.classList.remove('open');
+      }
+    });
+  }
+
+  function escHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // 7. LOGIN BUTTONS (only if not logged in)
+  // ─────────────────────────────────────────────
   function initLoginButtons() {
     document.addEventListener('click', function (e) {
       var btn = e.target.closest && e.target.closest('.login-btn');
@@ -215,28 +270,68 @@
         window.stardustToast && window.stardustToast(err.message || 'Login failed.', 'error');
       });
     });
+
+    // Special-case: "Open Dashboard" button — if logged in, jump straight to dashboard
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('.open-dashboard-btn');
+      if (!btn) return;
+      e.preventDefault();
+      var cached = getCachedUser();
+      if (cached) {
+        window.location.href = 'dashboard.html';
+      } else {
+        window.location.href = 'dashboard.html'; // dashboard.html will redirect to login if not authed
+      }
+    });
   }
 
-  // ═════════════════════════════════════════════
-  // 7. OAUTH RETURN HANDLER (?login=success)
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
+  // 8. OAUTH RETURN HANDLER
+  // ─────────────────────────────────────────────
   function initOAuthReturn() {
     var params = new URLSearchParams(window.location.search);
     if (params.get('login') === 'success') {
+      clearCachedUser();
       window.stardustToast && window.stardustToast('Logged in successfully. Redirecting…', 'success');
       window.history.replaceState({}, '', window.location.pathname);
-      setTimeout(function () {
-        window.location.href = 'dashboard.html';
-      }, 800);
+      setTimeout(function () { window.location.href = 'dashboard.html'; }, 800);
     } else if (params.get('login_error')) {
       window.stardustToast && window.stardustToast('Login failed: ' + params.get('login_error'), 'error');
       window.history.replaceState({}, '', window.location.pathname);
     }
   }
 
-  // ═════════════════════════════════════════════
-  // 8. LIVE STATUS (with Render cold-start resilience)
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
+  // 9. SESSION DETECTION — THE KEY FIX
+  // ─────────────────────────────────────────────
+  async function detectSession() {
+    if (!window.StardustAPI) return;
+
+    // Skip detection on dashboard/server pages — they handle their own
+    var path = window.location.pathname.toLowerCase();
+    if (path.indexOf('dashboard') !== -1 || path.indexOf('server') !== -1) return;
+
+    // Try cache first
+    var cached = getCachedUser();
+    if (cached) { updateHeaderForUser(cached); return; }
+
+    // Otherwise fetch /api/auth/me
+    try {
+      var res = await window.StardustAPI.me();
+      if (res.ok && res.data && res.data.id) {
+        setCachedUser(res.data);
+        updateHeaderForUser(res.data);
+      } else {
+        clearCachedUser();
+      }
+    } catch (err) {
+      clearCachedUser();
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // 10. LIVE STATUS
+  // ─────────────────────────────────────────────
   function initLiveStatus() {
     var footerDot = document.getElementById('footerStatusDot');
     var footerText = document.getElementById('footerStatusText');
@@ -262,39 +357,24 @@
     }
 
     var attempts = 0;
-    var MAX_ATTEMPTS = 3;
-
+    var MAX = 3;
     async function check() {
-      if (!window.StardustAPI) {
-        setOffline('API not loaded');
-        return;
-      }
+      if (!window.StardustAPI) { setOffline('API not loaded'); return; }
       var res = await window.StardustAPI.health();
-      if (res.ok && res.data) {
-        setOnline(res.data);
-        return;
-      }
+      if (res.ok && res.data) { setOnline(res.data); return; }
       attempts++;
-      if (attempts < MAX_ATTEMPTS) {
-        if (footerText) footerText.textContent = 'Waking up server… (' + attempts + '/' + MAX_ATTEMPTS + ')';
-        // Exponential backoff: 3s, 6s
+      if (attempts < MAX) {
+        if (footerText) footerText.textContent = 'Waking up server… (' + attempts + '/' + MAX + ')';
         setTimeout(check, 3000 * attempts);
-      } else {
-        setOffline('Backend unavailable');
-      }
+      } else { setOffline('Backend unavailable'); }
     }
-
-    // First check after slight delay so page renders first
     setTimeout(check, 500);
-    setInterval(function () {
-      attempts = 0;
-      check();
-    }, 60000);
+    setInterval(function () { attempts = 0; check(); }, 60000);
   }
 
-  // ═════════════════════════════════════════════
-  // 9. SMOOTH ANCHOR SCROLL
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
+  // 11. SMOOTH SCROLL
+  // ─────────────────────────────────────────────
   function initSmoothScroll() {
     document.addEventListener('click', function (e) {
       var a = e.target.closest && e.target.closest('a[href^="#"]');
@@ -309,21 +389,23 @@
     });
   }
 
-  // ═════════════════════════════════════════════
-  // BOOT — wait for DOM then start subsystems
-  // ═════════════════════════════════════════════
+  // ─────────────────────────────────────────────
+  // BOOT
+  // ─────────────────────────────────────────────
   function boot() {
-    log('Booting subsystems…');
-    runSafe('Theme system', initTheme);
+    log('Booting…');
+    runSafe('Theme', initTheme);
     runSafe('Header scroll', initHeaderScroll);
-    runSafe('Mobile drawer', initDrawer);
-    runSafe('Showcase tabs', initShowcase);
-    runSafe('Toast system', initToast);
+    runSafe('Drawer', initDrawer);
+    runSafe('Showcase', initShowcase);
+    runSafe('Toast', initToast);
     runSafe('Login buttons', initLoginButtons);
     runSafe('OAuth return', initOAuthReturn);
     runSafe('Live status', initLiveStatus);
     runSafe('Smooth scroll', initSmoothScroll);
-    log('All subsystems ready.');
+    // Session detection must run AFTER toast is ready
+    setTimeout(function () { runSafe('Session detect', detectSession); }, 100);
+    log('Ready.');
   }
 
   if (document.readyState === 'loading') {

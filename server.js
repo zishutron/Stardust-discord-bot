@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   STARDUST — Server dashboard logic (v3)
-   Fully wired to backend v3.0
+   STARDUST — Server dashboard logic (v4)
+   SVG icons, image upload via Catbox, full config wiring.
    ═══════════════════════════════════════════════════════════ */
 
 (function () {
@@ -8,6 +8,15 @@
 
   var API = window.StardustAPI;
   function $(id) { return document.getElementById(id); }
+
+  // ─────────────────────────────────────────────
+  // INLINE SVG ICONS (no emoji)
+  // ─────────────────────────────────────────────
+  var SVG_USERS   = '<svg class="stat-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+  var SVG_CHANNEL = '<svg class="stat-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+  var SVG_TAG     = '<svg class="stat-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><path d="M7 7h.01"/></svg>';
+  var SVG_ZAP     = '<svg class="stat-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>';
+  var SVG_COIN    = '<svg class="stat-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a2 2 0 0 1 0 4h-3a2 2 0 0 0 0 4h4"/></svg>';
 
   var state = {
     guildId: null,
@@ -26,10 +35,9 @@
   var els = {};
 
   // ─────────────────────────────────────────────
-  // REF CACHE
+  // CACHE
   // ─────────────────────────────────────────────
   function cache() {
-    // Shell
     els.loading = $('serverLoading');
     els.error = $('serverError');
     els.errorTitle = $('serverErrorTitle');
@@ -47,18 +55,15 @@
     els.userName = $('userName');
     els.logoutBtn = $('logoutBtn');
 
-    // Generic tab panels + sidebar links
     els.panels = document.querySelectorAll('.tab-panel');
     els.links = document.querySelectorAll('.sidebar-link[data-tab]');
 
-    // Overview
     els.serverHeroIcon = $('serverHeroIcon');
     els.serverHeroName = $('serverHeroName');
     els.serverHeroStats = $('serverHeroStats');
     els.statsRow = $('statsRow');
     els.modulesGrid = $('modulesGrid');
 
-    // Welcome
     els.welcomeEnabled = $('welcomeEnabled');
     els.welcomeChannel = $('welcomeChannel');
     els.welcomeMention = $('welcomeMention');
@@ -78,7 +83,6 @@
     els.welcomeSaveBtn = $('welcomeSaveBtn');
     els.welcomeTestBtn = $('welcomeTestBtn');
 
-    // Leave
     els.leaveEnabled = $('leaveEnabled');
     els.leaveChannel = $('leaveChannel');
     els.leaveUseEmbed = $('leaveUseEmbed');
@@ -95,7 +99,6 @@
     els.leavePreviewImg = $('leavePreviewImg');
     els.leaveSaveBtn = $('leaveSaveBtn');
 
-    // Booster
     els.boosterEnabled = $('boosterEnabled');
     els.boosterChannel = $('boosterChannel');
     els.boosterUseEmbed = $('boosterUseEmbed');
@@ -109,7 +112,6 @@
     els.boosterEmbedImage = $('boosterEmbedImage');
     els.boosterSaveBtn = $('boosterSaveBtn');
 
-    // Leveling
     els.levelEnabled = $('levelEnabled');
     els.levelXpMin = $('levelXpMin');
     els.levelXpMax = $('levelXpMax');
@@ -122,7 +124,6 @@
     els.levelUseCard = $('levelUseCard');
     els.levelSaveBtn = $('levelSaveBtn');
 
-    // Economy
     els.economyEnabled = $('economyEnabled');
     els.economyCurrencyName = $('economyCurrencyName');
     els.economyCurrencySymbol = $('economyCurrencySymbol');
@@ -135,7 +136,6 @@
     els.economyLb = $('economyLb');
     els.economySaveBtn = $('economySaveBtn');
 
-    // AutoMod
     els.automodEnabled = $('automodEnabled');
     els.automodIgnoreStaff = $('automodIgnoreStaff');
     els.automodAction = $('automodAction');
@@ -147,7 +147,6 @@
     els.wordCount = $('wordCount');
     els.automodSaveBtn = $('automodSaveBtn');
 
-    // Auto-Responder
     els.autoresponderEnabled = $('autoresponderEnabled');
     els.arTriggerInput = $('arTriggerInput');
     els.arResponseInput = $('arResponseInput');
@@ -157,7 +156,6 @@
     els.arCount = $('arCount');
     els.autoresponderSaveBtn = $('autoresponderSaveBtn');
 
-    // Logging
     els.loggingEnabled = $('loggingEnabled');
     els.loggingChannel = $('loggingChannel');
     els.logMsgDelete = $('logMsgDelete');
@@ -167,7 +165,6 @@
     els.logVoice = $('logVoice');
     els.loggingSaveBtn = $('loggingSaveBtn');
 
-    // Tickets
     els.ticketEnabled = $('ticketEnabled');
     els.ticketPanelChannel = $('ticketPanelChannel');
     els.ticketPanelTitle = $('ticketPanelTitle');
@@ -181,7 +178,6 @@
     els.ticketSaveBtn = $('ticketSaveBtn');
     els.ticketDeployBtn = $('ticketDeployBtn');
 
-    // Custom Commands
     els.ccTriggerInput = $('ccTriggerInput');
     els.ccResponseInput = $('ccResponseInput');
     els.ccAddBtn = $('ccAddBtn');
@@ -189,7 +185,6 @@
     els.ccEmpty = $('ccEmpty');
     els.ccCount = $('ccCount');
 
-    // Embeds
     els.emTitle = $('emTitle');
     els.emDescription = $('emDescription');
     els.emColor = $('emColor');
@@ -204,19 +199,16 @@
     els.emPreviewImgWrap = $('emPreviewImgWrap');
     els.emPreviewImg = $('emPreviewImg');
 
-    // Giveaways
     els.gwPrize = $('gwPrize');
     els.gwDuration = $('gwDuration');
     els.gwWinners = $('gwWinners');
     els.gwChannel = $('gwChannel');
     els.gwStartBtn = $('gwStartBtn');
 
-    // Settings
     els.setGuildId = $('setGuildId');
     els.setBotPresence = $('setBotPresence');
     els.setBotLatency = $('setBotLatency');
 
-    // Modal
     els.modalOverlay = $('modalOverlay');
     els.modalTitle = $('modalTitle');
     els.modalBody = $('modalBody');
@@ -251,20 +243,96 @@
     if (!hash) return 'https://cdn.discordapp.com/embed/avatars/0.png';
     return 'https://cdn.discordapp.com/avatars/' + id + '/' + hash + '.png?size=64';
   }
-  function setToggle(el, on) {
-    if (!el) return;
-    el.setAttribute('aria-checked', on ? 'true' : 'false');
-  }
-  function getToggle(el) {
-    return el && el.getAttribute('aria-checked') === 'true';
-  }
+  function setToggle(el, on) { if (el) el.setAttribute('aria-checked', on ? 'true' : 'false'); }
+  function getToggle(el) { return el && el.getAttribute('aria-checked') === 'true'; }
   function hexOk(v) {
     if (!v) return false;
     v = String(v).trim();
     return /^#?[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(v);
   }
+  function normalizeHex(v, fallback) {
+    if (!v) return fallback;
+    var h = String(v).trim();
+    if (h[0] !== '#') h = '#' + h;
+    if (!/^#[0-9a-fA-F]{6}$/.test(h)) return fallback;
+    return h.toLowerCase();
+  }
 
-  // Confirm modal
+  // ─────────────────────────────────────────────
+  // IMAGE UPLOAD (Catbox, no API key needed)
+  // ─────────────────────────────────────────────
+  async function uploadImageToCdn(file) {
+    var dataUrl = await new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(reader.result); };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    var resized = await new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () {
+        var MAX = 500;
+        var w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(function (blob) { resolve(blob); }, 'image/png', 0.92);
+      };
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
+
+    var fd = new FormData();
+    fd.append('reqtype', 'fileupload');
+    fd.append('fileToUpload', resized, 'stardust-' + Date.now() + '.png');
+
+    var res = await fetch('https://catbox.moe/user/api.php', { method: 'POST', body: fd });
+    if (!res.ok) throw new Error('Upload failed');
+    var url = (await res.text() || '').trim();
+    if (!/^https?:\/\//.test(url)) throw new Error('Invalid upload response');
+    return url;
+  }
+
+  function initImageUploads() {
+    document.addEventListener('change', async function (e) {
+      var input = e.target;
+      if (!input.classList || !input.classList.contains('upload-input')) return;
+      var file = input.files && input.files[0];
+      if (!file) return;
+      var targetId = input.dataset.target;
+      var target = document.getElementById(targetId);
+      if (!target) return;
+
+      var btn = input.closest('.upload-btn');
+      var originalHtml = btn.innerHTML;
+      btn.innerHTML = '<span class="upload-spinner"></span> Uploading…';
+      btn.style.pointerEvents = 'none';
+
+      try {
+        var url = await uploadImageToCdn(file);
+        target.value = url;
+        target.dispatchEvent(new Event('input', { bubbles: true }));
+        toast('Image uploaded.', 'success');
+      } catch (err) {
+        console.error('[UPLOAD]', err);
+        toast('Upload failed. Try again.', 'error');
+      } finally {
+        btn.innerHTML = originalHtml;
+        btn.style.pointerEvents = '';
+        input.value = '';
+      }
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // CONFIRM MODAL
+  // ─────────────────────────────────────────────
   var _confirmResolve = null;
   function confirmAction(title, body) {
     return new Promise(function (resolve) {
@@ -281,7 +349,7 @@
   }
 
   // ─────────────────────────────────────────────
-  // TAB NAVIGATION
+  // TAB NAV
   // ─────────────────────────────────────────────
   function initSidebar() {
     document.querySelectorAll('.sidebar-link[data-tab]').forEach(function (link) {
@@ -327,7 +395,7 @@
   }
 
   // ─────────────────────────────────────────────
-  // DATA LOAD
+  // LOAD
   // ─────────────────────────────────────────────
   async function loadEverything() {
     showOnly('loading');
@@ -353,7 +421,6 @@
     var cfg = await API.getConfig(state.guildId);
     if (cfg.ok) state.config = cfg.data || {};
 
-    // Parallel: channels, roles, words, autoresponders, custom commands
     var results = await Promise.all([
       API.request('/api/guilds/' + state.guildId + '/channels'),
       API.request('/api/guilds/' + state.guildId + '/roles'),
@@ -397,7 +464,7 @@
   }
 
   // ─────────────────────────────────────────────
-  // CHANNEL / ROLE DROPDOWNS
+  // DROPDOWNS
   // ─────────────────────────────────────────────
   function populateChannelSelects() {
     var textChannels = state.channels.filter(function (c) {
@@ -406,20 +473,12 @@
     var categories = state.channels.filter(function (c) { return c.type === 'category'; });
 
     var selects = [
-      { el: els.welcomeChannel,       placeholder: '— Select channel —',    allowEmpty: true },
-      { el: els.leaveChannel,         placeholder: '— Select channel —',    allowEmpty: true },
-      { el: els.boosterChannel,       placeholder: '— System channel —',    allowEmpty: true },
-      { el: els.levelChannel,         placeholder: '— Select channel —',    allowEmpty: true },
-      { el: els.economyRewardChannel, placeholder: '— Not configured —',    allowEmpty: true },
-      { el: els.loggingChannel,       placeholder: '— Select channel —',    allowEmpty: true },
-      { el: els.ticketPanelChannel,   placeholder: '— Select channel —',    allowEmpty: true },
-      { el: els.ticketLogChannel,     placeholder: '— None —',              allowEmpty: true },
-      { el: els.gwChannel,            placeholder: '— Select channel —',    allowEmpty: true },
-      { el: els.emChannel,            placeholder: '— Select channel —',    allowEmpty: true }
+      els.welcomeChannel, els.leaveChannel, els.boosterChannel,
+      els.levelChannel, els.economyRewardChannel, els.loggingChannel,
+      els.ticketPanelChannel, els.ticketLogChannel, els.gwChannel, els.emChannel
     ];
 
-    selects.forEach(function (item) {
-      var sel = item.el;
+    selects.forEach(function (sel) {
       if (!sel) return;
       while (sel.options.length > 1) sel.remove(1);
       textChannels.forEach(function (ch) {
@@ -430,7 +489,6 @@
       });
     });
 
-    // Ticket category dropdown
     if (els.ticketCategory) {
       while (els.ticketCategory.options.length > 1) els.ticketCategory.remove(1);
       categories.forEach(function (c) {
@@ -468,13 +526,12 @@
   }
 
   // ─────────────────────────────────────────────
-  // RENDER SERVER / CONFIG
+  // RENDER
   // ─────────────────────────────────────────────
   function renderServer() {
     var ov = state.overview; if (!ov) return;
     if (els.crumb) els.crumb.textContent = ov.name;
 
-    // Sidebar identity
     if (els.sidebarServer) {
       var icon = ov.icon
         ? '<img class="sidebar-server-icon" src="' + esc(ov.icon) + '" alt="">'
@@ -486,41 +543,38 @@
         '</div>';
     }
 
-    // Hero
     if (els.serverHeroIcon) {
       els.serverHeroIcon.innerHTML = ov.icon
         ? '<img src="' + esc(ov.icon) + '" alt="">'
         : initials(ov.name);
     }
     if (els.serverHeroName) els.serverHeroName.textContent = ov.name;
+
     if (els.serverHeroStats) {
       els.serverHeroStats.innerHTML =
-        '<span>👥 ' + (ov.member_count || 0).toLocaleString() + ' members</span>' +
-        '<span>💬 ' + (ov.channel_count || 0) + ' channels</span>' +
-        '<span>🎭 ' + (ov.role_count || 0) + ' roles</span>' +
-        '<span>⚡ ' + (ov.bot_latency_ms || '—') + 'ms</span>';
+        '<span>' + SVG_USERS + ' ' + (ov.member_count || 0).toLocaleString() + ' members</span>' +
+        '<span>' + SVG_CHANNEL + ' ' + (ov.channel_count || 0) + ' channels</span>' +
+        '<span>' + SVG_TAG + ' ' + (ov.role_count || 0) + ' roles</span>' +
+        '<span>' + SVG_ZAP + ' ' + (ov.bot_latency_ms || '—') + 'ms</span>';
     }
 
-    // Stats
     if (els.statsRow) {
       els.statsRow.innerHTML =
-        tile('Members', (ov.member_count || 0).toLocaleString()) +
-        tile('Channels', ov.channel_count || 0) +
-        tile('Roles', ov.role_count || 0) +
-        tile('Latency', (ov.bot_latency_ms || '—') + 'ms');
+        tile(SVG_USERS + 'Members', (ov.member_count || 0).toLocaleString()) +
+        tile(SVG_CHANNEL + 'Channels', ov.channel_count || 0) +
+        tile(SVG_TAG + 'Roles', ov.role_count || 0) +
+        tile(SVG_ZAP + 'Latency', (ov.bot_latency_ms || '—') + 'ms');
     }
 
-    // Modules
     renderModules(ov.modules || {});
 
-    // Settings
     if (els.setGuildId) els.setGuildId.textContent = ov.id;
     if (els.setBotPresence) els.setBotPresence.textContent = ov.bot_present ? 'Online' : 'Offline';
     if (els.setBotLatency) els.setBotLatency.textContent = (ov.bot_latency_ms || '—') + 'ms';
   }
 
   function tile(label, value) {
-    return '<div class="stat-tile"><div class="stat-tile-label">' + esc(label) +
+    return '<div class="stat-tile"><div class="stat-tile-label">' + label +
       '</div><div class="stat-tile-value">' + esc(value) + '</div></div>';
   }
 
@@ -552,7 +606,6 @@
   function applyConfig() {
     var c = state.config || {};
 
-    // Welcome
     setToggle(els.welcomeEnabled, !!c.welcome_enabled);
     setSelectValue(els.welcomeChannel, c.welcome_channel);
     setToggle(els.welcomeMention, c.welcome_mention !== false);
@@ -565,7 +618,6 @@
     if (els.welcomeEmbedColorPicker) els.welcomeEmbedColorPicker.value = normalizeHex(c.welcome_embed_color, '#2f3136');
     if (els.welcomeEmbedImage) els.welcomeEmbedImage.value = c.welcome_embed_image || '';
 
-    // Leave
     setToggle(els.leaveEnabled, !!c.leave_enabled);
     setSelectValue(els.leaveChannel, c.leave_channel);
     setToggle(els.leaveUseEmbed, c.leave_use_embed !== false);
@@ -576,7 +628,6 @@
     if (els.leaveEmbedColorPicker) els.leaveEmbedColorPicker.value = normalizeHex(c.leave_embed_color, '#99aab5');
     if (els.leaveEmbedImage) els.leaveEmbedImage.value = c.leave_embed_image || '';
 
-    // Booster
     setToggle(els.boosterEnabled, c.booster_enabled !== false);
     setSelectValue(els.boosterChannel, c.booster_channel);
     setToggle(els.boosterUseEmbed, c.booster_use_embed !== false);
@@ -589,7 +640,6 @@
     if (els.boosterEmbedColorPicker) els.boosterEmbedColorPicker.value = normalizeHex(c.booster_embed_color, '#f47fff');
     if (els.boosterEmbedImage) els.boosterEmbedImage.value = c.booster_embed_image || '';
 
-    // Leveling
     setToggle(els.levelEnabled, c.level_enabled !== false);
     if (els.levelXpMin) els.levelXpMin.value = c.level_xp_min != null ? c.level_xp_min : 15;
     if (els.levelXpMax) els.levelXpMax.value = c.level_xp_max != null ? c.level_xp_max : 25;
@@ -601,7 +651,6 @@
     if (els.levelMsg) els.levelMsg.value = c.level_msg || '';
     setToggle(els.levelUseCard, c.level_use_card !== false);
 
-    // Economy
     setToggle(els.economyEnabled, c.economy_enabled !== false);
     if (els.economyCurrencyName) els.economyCurrencyName.value = c.economy_currency_name || '';
     if (els.economyCurrencySymbol) els.economyCurrencySymbol.value = c.economy_currency_symbol || '';
@@ -612,16 +661,13 @@
     if (els.economyRewardMin) els.economyRewardMin.value = c.economy_reward_min != null ? c.economy_reward_min : 5000;
     if (els.economyRewardMax) els.economyRewardMax.value = c.economy_reward_max != null ? c.economy_reward_max : 75000;
 
-    // AutoMod
     setToggle(els.automodEnabled, c.automod_enabled !== false);
     setToggle(els.automodIgnoreStaff, c.automod_ignore_staff !== false);
     if (els.automodAction) els.automodAction.value = c.automod_action || 'delete_warn';
     if (els.automodWarnExpiry) els.automodWarnExpiry.value = c.automod_warn_expiry != null ? c.automod_warn_expiry : 4;
 
-    // Auto-Responder
     setToggle(els.autoresponderEnabled, c.autoresponder_enabled !== false);
 
-    // Logging
     setToggle(els.loggingEnabled, !!c.logging_enabled);
     setSelectValue(els.loggingChannel, c.logging_channel);
     setToggle(els.logMsgDelete, c.logging_message_delete !== false);
@@ -630,7 +676,6 @@
     setToggle(els.logMemberLeave, !!c.logging_member_leave);
     setToggle(els.logVoice, c.logging_voice !== false);
 
-    // Tickets
     setToggle(els.ticketEnabled, !!c.ticket_enabled);
     setSelectValue(els.ticketPanelChannel, c.ticket_panel_channel);
     if (els.ticketPanelTitle) els.ticketPanelTitle.value = c.ticket_panel_title || '';
@@ -642,31 +687,31 @@
     if (els.ticketWelcomeTitle) els.ticketWelcomeTitle.value = c.ticket_welcome_title || '';
     if (els.ticketWelcomeMessage) els.ticketWelcomeMessage.value = c.ticket_welcome_message || '';
 
-    // Render previews
     renderWelcomePreview();
     renderLeavePreview();
   }
 
-  function normalizeHex(v, fallback) {
-    if (!v) return fallback;
-    var h = String(v).trim();
-    if (h[0] !== '#') h = '#' + h;
-    if (!/^#[0-9a-fA-F]{6}$/.test(h)) return fallback;
-    return h.toLowerCase();
+  // ─────────────────────────────────────────────
+  // PREVIEWS
+  // ─────────────────────────────────────────────
+  function fmt(t) {
+    if (!t) return '';
+    var u = state.user;
+    var name = u ? (u.global_name || u.username) : 'User';
+    return t
+      .replace(/\{member\}/g, '@' + name)
+      .replace(/\{user\}/g, '@' + name)
+      .replace(/\{name\}/g, name)
+      .replace(/\{server\}/g, (state.overview && state.overview.name) || 'Server')
+      .replace(/\{count\}/g, (state.overview && state.overview.member_count) || 0)
+      .replace(/\{level\}/g, '5');
   }
 
-  // ─────────────────────────────────────────────
-  // PREVIEW
-  // ─────────────────────────────────────────────
   function renderWelcomePreview() {
-    var title = els.welcomeEmbedTitle ? els.welcomeEmbedTitle.value : '';
-    var desc = els.welcomeEmbedDescription ? els.welcomeEmbedDescription.value : '';
+    var title = fmt(els.welcomeEmbedTitle ? els.welcomeEmbedTitle.value : '');
+    var desc = fmt(els.welcomeEmbedDescription ? els.welcomeEmbedDescription.value : '');
     var color = els.welcomeEmbedColor ? els.welcomeEmbedColor.value : '';
     var img = els.welcomeEmbedImage ? els.welcomeEmbedImage.value : '';
-
-    title = fmt(title);
-    desc = fmt(desc);
-
     if (els.welcomePreviewTitle) els.welcomePreviewTitle.textContent = title || ' ';
     if (els.welcomePreviewDesc) els.welcomePreviewDesc.textContent = desc || ' ';
     if (els.welcomePreviewBar) els.welcomePreviewBar.style.background = hexOk(color) ? color : '#7c5cff';
@@ -681,14 +726,10 @@
   }
 
   function renderLeavePreview() {
-    var title = els.leaveEmbedTitle ? els.leaveEmbedTitle.value : '';
-    var desc = els.leaveEmbedDescription ? els.leaveEmbedDescription.value : '';
+    var title = fmt(els.leaveEmbedTitle ? els.leaveEmbedTitle.value : '');
+    var desc = fmt(els.leaveEmbedDescription ? els.leaveEmbedDescription.value : '');
     var color = els.leaveEmbedColor ? els.leaveEmbedColor.value : '';
     var img = els.leaveEmbedImage ? els.leaveEmbedImage.value : '';
-
-    title = fmt(title);
-    desc = fmt(desc);
-
     if (els.leavePreviewTitle) els.leavePreviewTitle.textContent = title || ' ';
     if (els.leavePreviewDesc) els.leavePreviewDesc.textContent = desc || ' ';
     if (els.leavePreviewBar) els.leavePreviewBar.style.background = hexOk(color) ? color : '#99aab5';
@@ -702,21 +743,8 @@
     }
   }
 
-  function fmt(t) {
-    if (!t) return '';
-    var u = state.user;
-    var name = u ? (u.global_name || u.username) : 'User';
-    return t
-      .replace(/\{member\}/g, '@' + name)
-      .replace(/\{user\}/g, '@' + name)
-      .replace(/\{name\}/g, name)
-      .replace(/\{server\}/g, (state.overview && state.overview.name) || 'Server')
-      .replace(/\{count\}/g, (state.overview && state.overview.member_count) || 0)
-      .replace(/\{level\}/g, '5');
-  }
-
   // ─────────────────────────────────────────────
-  // SAVE CONFIG (generic)
+  // SAVE + TOGGLES
   // ─────────────────────────────────────────────
   async function saveConfig(patch, successMsg) {
     var res = await API.updateConfig(state.guildId, patch);
@@ -729,9 +757,6 @@
     return true;
   }
 
-  // ─────────────────────────────────────────────
-  // TOGGLE BINDER
-  // ─────────────────────────────────────────────
   function bindToggle(el, key, transform) {
     if (!el) return;
     el.addEventListener('click', function () {
@@ -791,7 +816,7 @@
       els.welcomeTestBtn.addEventListener('click', async function () {
         var ch = els.welcomeChannel.value;
         if (!ch) return toast('Select a welcome channel first.', 'error');
-        var ok = await confirmAction('Send test welcome?', 'Post a test welcome message in the selected channel?');
+        var ok = await confirmAction('Send test welcome?', 'Post a test welcome message?');
         if (!ok) return;
         els.welcomeTestBtn.disabled = true;
         var res = await API.sendEmbed(state.guildId, {
@@ -802,7 +827,7 @@
           image_url: els.welcomeEmbedImage.value || ''
         });
         els.welcomeTestBtn.disabled = false;
-        if (!res.ok) return toast((res.error && res.error.message) || 'Failed to send test.', 'error');
+        if (!res.ok) return toast((res.error && res.error.message) || 'Failed.', 'error');
         toast('Test welcome sent.', 'success');
       });
     }
@@ -814,11 +839,9 @@
   function initLeaveTab() {
     bindToggle(els.leaveEnabled, 'leave_enabled');
     bindToggle(els.leaveUseEmbed, 'leave_use_embed');
-
     ['leaveEmbedTitle','leaveEmbedDescription','leaveEmbedColor','leaveEmbedImage'].forEach(function (k) {
       if (els[k]) els[k].addEventListener('input', renderLeavePreview);
     });
-
     if (els.leaveEmbedColorPicker && els.leaveEmbedColor) {
       els.leaveEmbedColorPicker.addEventListener('input', function () {
         els.leaveEmbedColor.value = els.leaveEmbedColorPicker.value;
@@ -831,7 +854,6 @@
         renderLeavePreview();
       });
     }
-
     if (els.leaveSaveBtn) {
       els.leaveSaveBtn.addEventListener('click', async function () {
         els.leaveSaveBtn.disabled = true;
@@ -889,7 +911,6 @@
     bindToggle(els.levelEnabled, 'level_enabled');
     bindToggle(els.levelAnnounceEnabled, 'level_announce_enabled');
     bindToggle(els.levelUseCard, 'level_use_card');
-
     if (els.levelSaveBtn) {
       els.levelSaveBtn.addEventListener('click', async function () {
         els.levelSaveBtn.disabled = true;
@@ -951,7 +972,7 @@
         '<div class="lb-rank ' + cls + '">#' + (i + 1) + '</div>' +
         '<img class="lb-avatar" src="' + esc(av) + '" alt="">' +
         '<div class="lb-name">' + esc(u.name) + '</div>' +
-        '<div class="lb-balance">🪙 ' + (u.balance || 0).toLocaleString() + '</div>' +
+        '<div class="lb-balance">' + SVG_COIN + ' ' + (u.balance || 0).toLocaleString() + '</div>' +
         '</div>';
     }).join('') + '</div>';
   }
@@ -962,14 +983,12 @@
   function initAutomodTab() {
     bindToggle(els.automodEnabled, 'automod_enabled');
     bindToggle(els.automodIgnoreStaff, 'automod_ignore_staff');
-
     if (els.wordAddBtn) els.wordAddBtn.addEventListener('click', addWord);
     if (els.wordInput) {
       els.wordInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') { e.preventDefault(); addWord(); }
       });
     }
-
     if (els.automodSaveBtn) {
       els.automodSaveBtn.addEventListener('click', async function () {
         els.automodSaveBtn.disabled = true;
@@ -1096,7 +1115,6 @@
     bindToggle(els.logMemberJoin, 'logging_member_join');
     bindToggle(els.logMemberLeave, 'logging_member_leave');
     bindToggle(els.logVoice, 'logging_voice');
-
     if (els.loggingSaveBtn) {
       els.loggingSaveBtn.addEventListener('click', async function () {
         els.loggingSaveBtn.disabled = true;
@@ -1112,7 +1130,6 @@
   function initTicketsTab() {
     bindToggle(els.ticketEnabled, 'ticket_enabled');
     bindToggle(els.ticketAutoPing, 'ticket_auto_ping_staff');
-
     if (els.ticketSaveBtn) {
       els.ticketSaveBtn.addEventListener('click', async function () {
         els.ticketSaveBtn.disabled = true;
@@ -1129,12 +1146,11 @@
         els.ticketSaveBtn.disabled = false;
       });
     }
-
     if (els.ticketDeployBtn) {
       els.ticketDeployBtn.addEventListener('click', async function () {
         var ch = els.ticketPanelChannel.value;
         if (!ch) return toast('Select a panel channel first.', 'error');
-        var ok = await confirmAction('Deploy ticket panel?', 'This will post a ticket launcher in the selected channel.');
+        var ok = await confirmAction('Deploy ticket panel?', 'Post a ticket launcher in the selected channel?');
         if (!ok) return;
         els.ticketDeployBtn.disabled = true;
         var res = await API.deployTicketPanel(state.guildId, ch);
@@ -1223,7 +1239,6 @@
       });
     }
     if (els.emPreviewBtn) els.emPreviewBtn.addEventListener('click', renderEmbedPreview);
-
     if (els.emSendBtn) {
       els.emSendBtn.addEventListener('click', async function () {
         var ch = els.emChannel.value;
@@ -1263,7 +1278,7 @@
   }
 
   // ─────────────────────────────────────────────
-  // GIVEAWAY TAB
+  // GIVEAWAYS TAB
   // ─────────────────────────────────────────────
   function initGiveawaysTab() {
     if (els.gwStartBtn) {
@@ -1294,7 +1309,7 @@
   }
 
   // ─────────────────────────────────────────────
-  // USER MENU / MODAL / RETRY
+  // USER MENU / LOGOUT / MODAL / RETRY
   // ─────────────────────────────────────────────
   function initUserMenu() {
     if (!els.userChip || !els.userMenu) return;
@@ -1315,6 +1330,7 @@
     els.logoutBtn.addEventListener('click', async function () {
       els.logoutBtn.disabled = true;
       try { await API.logout(); } catch (e) {}
+      try { window.stardustClearSession && window.stardustClearSession(); } catch (e) {}
       window.location.href = 'index.html';
     });
   }
@@ -1351,6 +1367,7 @@
     initLogout();
     initRetry();
     initModal();
+    initImageUploads();
     initWelcomeTab();
     initLeaveTab();
     initBoosterTab();

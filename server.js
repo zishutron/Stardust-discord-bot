@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   STARDUST — Server dashboard logic (v4)
-   SVG icons, image upload via Catbox, full config wiring.
+   STARDUST — Server dashboard logic (v5)
+   Fixed: initImageUploads missing, safe boot, ImgBB upload.
    ═══════════════════════════════════════════════════════════ */
 
 (function () {
@@ -258,45 +258,76 @@
     return h.toLowerCase();
   }
 
-// ─────────────────────────────────────────────
-// IMAGE UPLOAD (ImgBB API)
-// ─────────────────────────────────────────────
-var IMGBB_API_KEY = '98718c328ac688477bd3728382dd690c';
+  // ─────────────────────────────────────────────
+  // IMAGE UPLOAD (ImgBB API)
+  // ─────────────────────────────────────────────
+  var IMGBB_API_KEY = '98718c328ac688477bd3728382dd690c';
 
-async function uploadImageToCdn(file) {
-  // 1) Convert to base64
-  var base64 = await new Promise(function (resolve, reject) {
-    var reader = new FileReader();
-    reader.onload = function () {
-      var result = reader.result || '';
-      // Strip "data:image/...;base64," prefix
-      var comma = result.indexOf(',');
-      resolve(comma >= 0 ? result.slice(comma + 1) : result);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+  async function uploadImageToCdn(file) {
+    // 1) Convert to base64
+    var base64 = await new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        var result = reader.result || '';
+        var comma = result.indexOf(',');
+        resolve(comma >= 0 ? result.slice(comma + 1) : result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
-  // 2) Upload to ImgBB
-  var fd = new FormData();
-  fd.append('key', IMGBB_API_KEY);
-  fd.append('image', base64);
-  fd.append('name', 'stardust-' + Date.now());
+    // 2) Upload to ImgBB
+    var fd = new FormData();
+    fd.append('key', IMGBB_API_KEY);
+    fd.append('image', base64);
+    fd.append('name', 'stardust-' + Date.now());
 
-  var res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
-  if (!res.ok) {
-    var txt = await res.text().catch(function () { return ''; });
-    console.error('[UPLOAD] ImgBB HTTP error:', res.status, txt);
-    throw new Error('Upload failed: HTTP ' + res.status);
+    var res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
+    if (!res.ok) {
+      var txt = await res.text().catch(function () { return ''; });
+      console.error('[UPLOAD] ImgBB HTTP error:', res.status, txt);
+      throw new Error('Upload failed: HTTP ' + res.status);
+    }
+
+    var json = await res.json();
+    if (!json || !json.success || !json.data || !json.data.url) {
+      console.error('[UPLOAD] ImgBB response:', json);
+      throw new Error((json && json.error && json.error.message) || 'ImgBB upload failed');
+    }
+    return json.data.url;
   }
 
-  var json = await res.json();
-  if (!json || !json.success || !json.data || !json.data.url) {
-    console.error('[UPLOAD] ImgBB response:', json);
-    throw new Error((json && json.error && json.error.message) || 'ImgBB upload failed');
+  function initImageUploads() {
+    document.addEventListener('change', async function (e) {
+      var input = e.target;
+      if (!input.classList || !input.classList.contains('upload-input')) return;
+      var file = input.files && input.files[0];
+      if (!file) return;
+      var targetId = input.dataset.target;
+      var target = document.getElementById(targetId);
+      if (!target) return;
+
+      var btn = input.closest('.upload-btn');
+      if (!btn) return;
+      var originalHtml = btn.innerHTML;
+      btn.innerHTML = '<span class="upload-spinner"></span> Uploading…';
+      btn.style.pointerEvents = 'none';
+
+      try {
+        var url = await uploadImageToCdn(file);
+        target.value = url;
+        target.dispatchEvent(new Event('input', { bubbles: true }));
+        toast('Image uploaded.', 'success');
+      } catch (err) {
+        console.error('[UPLOAD]', err);
+        toast('Upload failed. Try again.', 'error');
+      } finally {
+        btn.innerHTML = originalHtml;
+        btn.style.pointerEvents = '';
+        input.value = '';
+      }
+    });
   }
-  return json.data.url;
-}
 
   // ─────────────────────────────────────────────
   // CONFIRM MODAL
@@ -368,50 +399,69 @@ async function uploadImageToCdn(file) {
   async function loadEverything() {
     showOnly('loading');
 
-    var me = await API.me();
-    if (!me.ok) {
-      if (me.status === 401) { window.location.href = 'dashboard.html'; return; }
-      return showError('Session error', 'Please log in again.');
+    // Fail-safe timeout — if not loaded in 25s, show error
+    var _loaded = false;
+    var _timeout = setTimeout(function () {
+      if (!_loaded) {
+        console.error('[LOAD] Timed out after 25s');
+        showError('Loading timed out', 'Backend not responding. Try again in 30 seconds.');
+      }
+    }, 25000);
+
+    try {
+      var me = await API.me();
+      if (!me.ok) {
+        clearTimeout(_timeout);
+        if (me.status === 401) { window.location.href = 'dashboard.html'; return; }
+        return showError('Session error', 'Please log in again.');
+      }
+      state.user = me.data;
+      renderUser();
+
+      var ov = await API.overview(state.guildId);
+      if (!ov.ok) {
+        clearTimeout(_timeout);
+        if (ov.status === 401) { window.location.href = 'dashboard.html'; return; }
+        if (ov.status === 403) return showError('Access denied', 'You do not have permission to manage this server.');
+        if (ov.status === 409) return showError('Bot not installed', 'Stardust is not on this server. Re-invite it first.');
+        if (ov.status === 0 || ov.status === 503) return showError('Backend unavailable', 'Stardust is waking up. Try again in ~30 seconds.');
+        return showError('Could not load server', (ov.error && ov.error.message) || 'Unexpected error.');
+      }
+      state.overview = ov.data;
+
+      var cfg = await API.getConfig(state.guildId);
+      if (cfg.ok) state.config = cfg.data || {};
+
+      var results = await Promise.all([
+        API.request('/api/guilds/' + state.guildId + '/channels'),
+        API.request('/api/guilds/' + state.guildId + '/roles'),
+        API.automodWords(state.guildId),
+        API.request('/api/guilds/' + state.guildId + '/autoresponder'),
+        API.request('/api/guilds/' + state.guildId + '/custom_commands')
+      ]);
+
+      state.channels = (results[0] && results[0].ok && Array.isArray(results[0].data)) ? results[0].data : [];
+      state.roles = (results[1] && results[1].ok && Array.isArray(results[1].data)) ? results[1].data : [];
+      state.words = (results[2] && results[2].ok && Array.isArray(results[2].data)) ? results[2].data : [];
+      state.autoresponders = (results[3] && results[3].ok && results[3].data) ? results[3].data : {};
+      state.customCommands = (results[4] && results[4].ok && results[4].data) ? results[4].data : {};
+
+      populateChannelSelects();
+      populateRoleSelects();
+      renderServer();
+      applyConfig();
+      renderWords();
+      renderAutoresponders();
+      renderCustomCommands();
+
+      _loaded = true;
+      clearTimeout(_timeout);
+      showOnly('content');
+    } catch (err) {
+      clearTimeout(_timeout);
+      console.error('[LOAD] Exception:', err);
+      return showError('Load error', String(err && err.message || err));
     }
-    state.user = me.data;
-    renderUser();
-
-    var ov = await API.overview(state.guildId);
-    if (!ov.ok) {
-      if (ov.status === 401) { window.location.href = 'dashboard.html'; return; }
-      if (ov.status === 403) return showError('Access denied', 'You do not have permission to manage this server.');
-      if (ov.status === 409) return showError('Bot not installed', 'Stardust is not on this server. Re-invite it first.');
-      if (ov.status === 0 || ov.status === 503) return showError('Backend unavailable', 'Stardust is waking up. Try again in ~30 seconds.');
-      return showError('Could not load server', (ov.error && ov.error.message) || 'Unexpected error.');
-    }
-    state.overview = ov.data;
-
-    var cfg = await API.getConfig(state.guildId);
-    if (cfg.ok) state.config = cfg.data || {};
-
-    var results = await Promise.all([
-      API.request('/api/guilds/' + state.guildId + '/channels'),
-      API.request('/api/guilds/' + state.guildId + '/roles'),
-      API.automodWords(state.guildId),
-      API.request('/api/guilds/' + state.guildId + '/autoresponder'),
-      API.request('/api/guilds/' + state.guildId + '/custom_commands')
-    ]);
-
-    state.channels = (results[0].ok && Array.isArray(results[0].data)) ? results[0].data : [];
-    state.roles = (results[1].ok && Array.isArray(results[1].data)) ? results[1].data : [];
-    state.words = (results[2].ok && Array.isArray(results[2].data)) ? results[2].data : [];
-    state.autoresponders = (results[3].ok && results[3].data) ? results[3].data : {};
-    state.customCommands = (results[4].ok && results[4].data) ? results[4].data : {};
-
-    populateChannelSelects();
-    populateRoleSelects();
-    renderServer();
-    applyConfig();
-    renderWords();
-    renderAutoresponders();
-    renderCustomCommands();
-
-    showOnly('content');
   }
 
   function showError(title, msg) {
@@ -1330,29 +1380,38 @@ async function uploadImageToCdn(file) {
     state.guildId = params.get('guild');
     if (!state.guildId) { window.location.href = 'dashboard.html'; return; }
 
-    initSidebar();
-    initUserMenu();
-    initLogout();
-    initRetry();
-    initModal();
-    initImageUploads();
-    initWelcomeTab();
-    initLeaveTab();
-    initBoosterTab();
-    initLevelingTab();
-    initEconomyTab();
-    initAutomodTab();
-    initAutoresponderTab();
-    initLoggingTab();
-    initTicketsTab();
-    initCustomCommandsTab();
-    initEmbedsTab();
-    initGiveawaysTab();
+    // Safe runner — if one init fails, others still run
+    function safe(name, fn) {
+      try { fn(); }
+      catch (err) { console.error('[BOOT]', name, 'failed:', err); }
+    }
+
+    safe('Sidebar', initSidebar);
+    safe('User menu', initUserMenu);
+    safe('Logout', initLogout);
+    safe('Retry', initRetry);
+    safe('Modal', initModal);
+    safe('Image uploads', initImageUploads);
+    safe('Welcome tab', initWelcomeTab);
+    safe('Leave tab', initLeaveTab);
+    safe('Booster tab', initBoosterTab);
+    safe('Leveling tab', initLevelingTab);
+    safe('Economy tab', initEconomyTab);
+    safe('Automod tab', initAutomodTab);
+    safe('Autoresponder tab', initAutoresponderTab);
+    safe('Logging tab', initLoggingTab);
+    safe('Tickets tab', initTicketsTab);
+    safe('Custom commands tab', initCustomCommandsTab);
+    safe('Embeds tab', initEmbedsTab);
+    safe('Giveaways tab', initGiveawaysTab);
 
     loadEverything().then(function () {
-      initSidebar();
+      safe('Sidebar re-bind', initSidebar);
       var hash = window.location.hash.replace('#', '');
       if (hash) switchTab(hash);
+    }).catch(function (err) {
+      console.error('[LOAD] Fatal:', err);
+      showError('Load error', String(err && err.message || err));
     });
   }
 

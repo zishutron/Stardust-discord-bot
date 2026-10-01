@@ -922,7 +922,7 @@ input, textarea, select { font: inherit; }
 /* ═══ Drawer user profile (bottom of mobile drawer) ═══ */
 .drawer-user {
   margin-top: auto;
-  padding-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid var(--border);
   position: relative;
 }
@@ -932,7 +932,7 @@ input, textarea, select { font: inherit; }
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-radius: var(--radius);
   background: var(--surface);
   border: 1px solid var(--border);
@@ -946,15 +946,16 @@ input, textarea, select { font: inherit; }
 }
 
 .drawer-user-avatar {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
   background: var(--surface-2);
+  border: 1px solid var(--border);
 }
 
-.drawer-user-meta {
+.drawer-user-info {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -968,21 +969,26 @@ input, textarea, select { font: inherit; }
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.2;
 }
-.drawer-user-sub {
-  font-size: 11.5px;
+.drawer-user-handle {
+  font-size: 12px;
   color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 .drawer-user-caret {
   color: var(--text-muted);
   flex-shrink: 0;
-  transition: transform var(--transition);
+  transition: transform 200ms ease;
 }
 .drawer-user-btn[aria-expanded="true"] .drawer-user-caret {
   transform: rotate(180deg);
 }
 
-/* Drawer user dropdown menu (opens upward) */
+/* Dropdown (opens above the profile button) */
 .drawer-user-menu {
   position: absolute;
   bottom: calc(100% + 8px);
@@ -996,7 +1002,7 @@ input, textarea, select { font: inherit; }
   opacity: 0;
   visibility: hidden;
   transform: translateY(8px);
-  transition: opacity 180ms ease, visibility 180ms ease, transform 180ms ease;
+  transition: opacity 200ms ease, visibility 200ms ease, transform 200ms ease;
   z-index: 50;
 }
 .drawer-user-menu.open {
@@ -1010,9 +1016,10 @@ input, textarea, select { font: inherit; }
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 11px 12px;
   border-radius: var(--radius-sm);
   font-size: 14px;
+  font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
   text-align: left;
@@ -1028,8 +1035,9 @@ input, textarea, select { font: inherit; }
 .drawer-user-item.danger { color: var(--danger); }
 .drawer-user-item.danger:hover {
   background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
 }
-.drawer-user-item svg { flex-shrink: 0; }
+.drawer-user-item svg { flex-shrink: 0; opacity: 0.85; }
 
 .drawer-user-sep {
   height: 1px;
@@ -1037,5 +1045,14 @@ input, textarea, select { font: inherit; }
   margin: 4px 2px;
 }
 
-/* ═══ Remove old user-chip CSS (no longer used) ═══ */
-/* Nothing needed — chip is not created anymore */
+/* ═══ Drawer login button (shown when NOT logged in) ═══ */
+.drawer-login {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.drawer-login-btn {
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+}

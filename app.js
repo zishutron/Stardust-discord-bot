@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   STARDUST — Global page behavior (v3)
-   Auto-detects login, updates header, theme, drawer, dropdown.
+   STARDUST — Global page behavior (v5)
+   Homepage: simple header, drawer profile card, session detect.
    ═══════════════════════════════════════════════════════════ */
 
 (function () {
@@ -20,12 +20,10 @@
   function initTheme() {
     var root = document.documentElement;
     var KEY = 'stardust_theme';
-
     function apply(theme) {
       root.setAttribute('data-theme', theme);
       try { localStorage.setItem(KEY, theme); } catch (e) {}
     }
-
     var saved = null;
     try { saved = localStorage.getItem(KEY); } catch (e) {}
     if (saved === 'light' || saved === 'dark') apply(saved);
@@ -34,7 +32,6 @@
       try { prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches; } catch (e) {}
       apply(prefersLight ? 'light' : 'dark');
     }
-
     document.addEventListener('click', function (e) {
       var btn = e.target.closest && e.target.closest('#themeToggle');
       if (!btn) return;
@@ -65,7 +62,6 @@
     var drawer = document.getElementById('drawer');
     var overlay = document.getElementById('drawerOverlay');
     if (!drawer || !overlay) return;
-
     function open() {
       drawer.classList.add('active');
       overlay.classList.add('active');
@@ -78,19 +74,14 @@
       drawer.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
     }
-
     document.addEventListener('click', function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
       if (t.closest('#menuToggle')) { e.preventDefault(); open(); return; }
       if (t.closest('#drawerClose')) { e.preventDefault(); close(); return; }
       if (t.closest('#drawerOverlay')) { e.preventDefault(); close(); return; }
-      var link = t.closest('#drawer a');
-      if (link) close();
     });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') close();
-    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
   }
 
   // ─────────────────────────────────────────────
@@ -147,10 +138,10 @@
   }
 
   // ─────────────────────────────────────────────
-  // 6. SESSION — CACHE + HEADER UPDATE
+  // 6. SESSION CACHE
   // ─────────────────────────────────────────────
   var SESSION_KEY = 'stardust_session_user';
-  var SESSION_MAX_AGE = 5 * 60 * 1000; // 5 min
+  var SESSION_MAX_AGE = 5 * 60 * 1000;
 
   function getCachedUser() {
     try {
@@ -171,137 +162,69 @@
     try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
   }
   window.stardustClearSession = clearCachedUser;
+  window.stardustGetUser = getCachedUser;
 
-  function userAvatarUrl(u, size) {
+  function userAvatarUrl(u) {
     if (!u) return 'https://cdn.discordapp.com/embed/avatars/0.png';
-    var s = size || 64;
-    if (u.avatar) return 'https://cdn.discordapp.com/avatars/' + u.id + '/' + u.avatar + '.png?size=' + s;
+    if (u.avatar) return 'https://cdn.discordapp.com/avatars/' + u.id + '/' + u.avatar + '.png?size=64';
     return 'https://cdn.discordapp.com/embed/avatars/0.png';
   }
 
-  function escHtml(s) {
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+  // ─────────────────────────────────────────────
+  // 7. DRAWER USER PROFILE
+  // ─────────────────────────────────────────────
+  function populateDrawerUser(user) {
+    var wrap = document.getElementById('drawerUser');
+    var av = document.getElementById('drawerUserAvatar');
+    var nm = document.getElementById('drawerUserName');
+    var sub = document.getElementById('drawerUserSub');
+    if (!wrap || !av || !nm) return;
+    wrap.hidden = false;
+    av.src = userAvatarUrl(user);
+    nm.textContent = user.global_name || user.username || 'User';
+    if (sub) sub.textContent = user.username ? '@' + user.username : 'Signed in';
+  }
+
+  function initDrawerUserMenu() {
+    var btn = document.getElementById('drawerUserBtn');
+    var menu = document.getElementById('drawerUserMenu');
+    var logout = document.getElementById('drawerLogoutBtn');
+    if (!btn || !menu) return;
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isOpen = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
-  }
 
-  function updateHeaderForUser(user) {
-    if (!user) return;
-    var name = user.global_name || user.username || 'User';
-    var av = userAvatarUrl(user, 64);
-
-    document.querySelectorAll('.login-btn').forEach(function (btn) {
-      btn.classList.remove('login-btn');
-      btn.classList.add('user-chip-btn');
-      btn.setAttribute('aria-haspopup', 'true');
-      btn.setAttribute('aria-expanded', 'false');
-
-      var isA = btn.tagName === 'A';
-      btn.innerHTML =
-        '<img class="user-chip-avatar" src="' + av + '" alt="">' +
-        '<span class="user-chip-name">' + escHtml(name) + '</span>' +
-        '<svg class="user-chip-caret" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
-      if (isA) btn.setAttribute('href', 'dashboard.html');
-    });
-
-    // Global dropdown handler (only attached once)
-    if (!window.__stardustUserMenuBound) {
-      window.__stardustUserMenuBound = true;
-
-      document.addEventListener('click', function (e) {
-        var chip = e.target.closest && e.target.closest('.user-chip-btn');
-        if (chip) {
-          e.preventDefault();
-          e.stopPropagation();
-          var menu = document.getElementById('globalUserMenu');
-          if (!menu) {
-            menu = document.createElement('div');
-            menu.id = 'globalUserMenu';
-            menu.className = 'global-user-menu';
-            menu.innerHTML =
-              '<a href="dashboard.html" class="dropdown-item">My servers</a>' +
-              '<a href="support.html" class="dropdown-item">Support</a>' +
-              '<div class="dropdown-sep"></div>' +
-              '<button type="button" class="dropdown-item danger" id="globalLogoutBtn">Log out</button>';
-            document.body.appendChild(menu);
-            document.getElementById('globalLogoutBtn').addEventListener('click', async function (ev) {
-              ev.preventDefault();
-              try { await window.StardustAPI.logout(); } catch (er) {}
-              clearCachedUser();
-              window.location.href = 'index.html';
-            });
-          }
-
-          // Toggle behavior
-          if (menu.classList.contains('open')) {
-            menu.classList.remove('open');
-            chip.setAttribute('aria-expanded', 'false');
-            return;
-          }
-
-          // Position: fixed, below the chip, clamped inside viewport
-          var rect = chip.getBoundingClientRect();
-          var menuWidth = 220;
-          var right = window.innerWidth - rect.right;
-          if (right < 12) right = 12;
-          if (window.innerWidth - right - menuWidth < 12) {
-            right = Math.max(12, window.innerWidth - menuWidth - 12);
-          }
-          menu.style.position = 'fixed';
-          menu.style.top = (rect.bottom + 8) + 'px';
-          menu.style.right = right + 'px';
-          menu.style.left = 'auto';
-          menu.classList.add('open');
-          chip.setAttribute('aria-expanded', 'true');
-          return;
-        }
-        var menu = document.getElementById('globalUserMenu');
-        if (menu && menu.classList.contains('open') && !e.target.closest('#globalUserMenu')) {
-          menu.classList.remove('open');
-        }
-      });
-    }
-  }
-
-  // ─────────────────────────────────────────────
-  // 7. DROPDOWN AUTO-CLOSE (scroll/resize)
-  // ─────────────────────────────────────────────
-  function initDropdownAutoClose() {
-    function closeMenu() {
-      var menu = document.getElementById('globalUserMenu');
-      if (menu) menu.classList.remove('open');
-    }
-    window.addEventListener('scroll', closeMenu, { passive: true });
-    window.addEventListener('resize', closeMenu);
-  }
-
-  // ─────────────────────────────────────────────
-  // 8. LOGIN BUTTONS (only if not logged in)
-  // ─────────────────────────────────────────────
-  function initLoginButtons() {
     document.addEventListener('click', function (e) {
-      var btn = e.target.closest && e.target.closest('.login-btn');
-      if (!btn) return;
-      e.preventDefault();
-
-      if (!window.StardustAPI) {
-        window.stardustToast && window.stardustToast('API client not loaded.', 'error');
-        return;
+      if (!menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
       }
-
-      btn.style.opacity = '0.6';
-      btn.style.pointerEvents = 'none';
-
-      window.StardustAPI.login().catch(function (err) {
-        btn.style.opacity = '';
-        btn.style.pointerEvents = '';
-        window.stardustToast && window.stardustToast(err.message || 'Login failed.', 'error');
-      });
     });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    if (logout) {
+      logout.addEventListener('click', async function (ev) {
+        ev.preventDefault();
+        try {
+          if (window.StardustAPI) await window.StardustAPI.logout();
+        } catch (e) {}
+        clearCachedUser();
+        window.location.href = 'index.html';
+      });
+    }
   }
 
   // ─────────────────────────────────────────────
-  // 9. OAUTH RETURN HANDLER
+  // 8. OAUTH RETURN HANDLER
   // ─────────────────────────────────────────────
   function initOAuthReturn() {
     var params = new URLSearchParams(window.location.search);
@@ -317,27 +240,45 @@
   }
 
   // ─────────────────────────────────────────────
-  // 10. SESSION DETECTION
+  // 9. SMART "OPEN DASHBOARD" (header + anywhere with data-smart-dashboard)
+  // ─────────────────────────────────────────────
+  function initSmartDashboard() {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('#openDashboardHeader, [data-smart-dashboard]');
+      if (!btn) return;
+      e.preventDefault();
+      var cached = getCachedUser();
+      if (cached) { window.location.href = 'dashboard.html'; return; }
+      // Not logged in → OAuth
+      if (!window.StardustAPI) { window.location.href = 'dashboard.html'; return; }
+      window.StardustAPI.login().catch(function () {
+        window.location.href = 'dashboard.html';
+      });
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // 10. SESSION DETECTION → populate drawer profile
   // ─────────────────────────────────────────────
   async function detectSession() {
     if (!window.StardustAPI) return;
-
     var path = window.location.pathname.toLowerCase();
     if (path.indexOf('dashboard') !== -1 || path.indexOf('server') !== -1) return;
 
+    // Skip on pages that don't have the drawer
+    if (!document.getElementById('drawerUser')) return;
+
     var cached = getCachedUser();
-    if (cached) { updateHeaderForUser(cached); return; }
+    if (cached) { populateDrawerUser(cached); return; }
 
     try {
       var res = await window.StardustAPI.me();
       if (res.ok && res.data && res.data.id) {
         setCachedUser(res.data);
-        updateHeaderForUser(res.data);
-      } else {
-        clearCachedUser();
+        populateDrawerUser(res.data);
       }
     } catch (err) {
-      clearCachedUser();
+      // silently ignore
     }
   }
 
@@ -367,7 +308,6 @@
       if (statLatency) statLatency.textContent = lat ? lat + 'ms' : '—';
       if (serverCount && gc) serverCount.textContent = (gc.toLocaleString ? gc.toLocaleString() : String(gc));
     }
-
     var attempts = 0;
     var MAX = 3;
     async function check() {
@@ -378,7 +318,7 @@
       if (attempts < MAX) {
         if (footerText) footerText.textContent = 'Waking up server… (' + attempts + '/' + MAX + ')';
         setTimeout(check, 3000 * attempts);
-      } else { setOffline('Backend unavailable'); }
+      } else setOffline('Backend unavailable');
     }
     setTimeout(check, 500);
     setInterval(function () { attempts = 0; check(); }, 60000);
@@ -411,18 +351,15 @@
     runSafe('Drawer', initDrawer);
     runSafe('Showcase', initShowcase);
     runSafe('Toast', initToast);
-    runSafe('Login buttons', initLoginButtons);
+    runSafe('Drawer user menu', initDrawerUserMenu);
     runSafe('OAuth return', initOAuthReturn);
-    runSafe('Dropdown autoclose', initDropdownAutoClose);
+    runSafe('Smart dashboard', initSmartDashboard);
     runSafe('Live status', initLiveStatus);
     runSafe('Smooth scroll', initSmoothScroll);
     setTimeout(function () { runSafe('Session detect', detectSession); }, 100);
     log('Ready.');
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
-    boot();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();

@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
-   STARDUST — Global page behavior (v5)
-   Homepage: simple header, drawer profile card, session detect.
+   STARDUST — Global page behavior (v6)
+   - Header: "Open Dashboard" → routes to dashboard or OAuth
+   - Drawer: shows Login OR user profile card
    ═══════════════════════════════════════════════════════════ */
 
 (function () {
@@ -8,7 +9,6 @@
 
   function log() { if (window.console) console.log.apply(console, ['[Stardust]'].concat(Array.prototype.slice.call(arguments))); }
   function warn() { if (window.console) console.warn.apply(console, ['[Stardust]'].concat(Array.prototype.slice.call(arguments))); }
-
   function runSafe(name, fn) {
     try { fn(); log('✓', name); }
     catch (err) { warn('✗', name, '—', err && err.message); }
@@ -166,23 +166,34 @@
 
   function userAvatarUrl(u) {
     if (!u) return 'https://cdn.discordapp.com/embed/avatars/0.png';
-    if (u.avatar) return 'https://cdn.discordapp.com/avatars/' + u.id + '/' + u.avatar + '.png?size=64';
+    if (u.avatar) return 'https://cdn.discordapp.com/avatars/' + u.id + '/' + u.avatar + '.png?size=128';
     return 'https://cdn.discordapp.com/embed/avatars/0.png';
   }
 
   // ─────────────────────────────────────────────
-  // 7. DRAWER USER PROFILE
+  // 7. DRAWER USER / LOGIN STATE
   // ─────────────────────────────────────────────
-  function populateDrawerUser(user) {
-    var wrap = document.getElementById('drawerUser');
+  function showDrawerLoggedIn(user) {
+    var userWrap = document.getElementById('drawerUser');
+    var loginWrap = document.getElementById('drawerLogin');
     var av = document.getElementById('drawerUserAvatar');
     var nm = document.getElementById('drawerUserName');
-    var sub = document.getElementById('drawerUserSub');
-    if (!wrap || !av || !nm) return;
-    wrap.hidden = false;
-    av.src = userAvatarUrl(user);
-    nm.textContent = user.global_name || user.username || 'User';
-    if (sub) sub.textContent = user.username ? '@' + user.username : 'Signed in';
+    var handle = document.getElementById('drawerUserHandle');
+
+    if (loginWrap) loginWrap.hidden = true;
+    if (!userWrap) return;
+    userWrap.hidden = false;
+
+    if (av) av.src = userAvatarUrl(user);
+    if (nm) nm.textContent = user.global_name || user.username || 'User';
+    if (handle) handle.textContent = user.username ? '@' + user.username : '';
+  }
+
+  function showDrawerLoggedOut() {
+    var userWrap = document.getElementById('drawerUser');
+    var loginWrap = document.getElementById('drawerLogin');
+    if (userWrap) userWrap.hidden = true;
+    if (loginWrap) loginWrap.hidden = false;
   }
 
   function initDrawerUserMenu() {
@@ -214,13 +225,27 @@
     if (logout) {
       logout.addEventListener('click', async function (ev) {
         ev.preventDefault();
-        try {
-          if (window.StardustAPI) await window.StardustAPI.logout();
-        } catch (e) {}
+        try { if (window.StardustAPI) await window.StardustAPI.logout(); } catch (e) {}
         clearCachedUser();
         window.location.href = 'index.html';
       });
     }
+  }
+
+  // Drawer login button → triggers OAuth
+  function initDrawerLogin() {
+    var btn = document.getElementById('drawerLoginBtn');
+    if (!btn) return;
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (!window.StardustAPI) return;
+      btn.style.opacity = '0.6';
+      btn.style.pointerEvents = 'none';
+      window.StardustAPI.login().catch(function () {
+        btn.style.opacity = '';
+        btn.style.pointerEvents = '';
+      });
+    });
   }
 
   // ─────────────────────────────────────────────
@@ -230,7 +255,7 @@
     var params = new URLSearchParams(window.location.search);
     if (params.get('login') === 'success') {
       clearCachedUser();
-      window.stardustToast && window.stardustToast('Logged in successfully. Redirecting…', 'success');
+      window.stardustToast && window.stardustToast('Logged in. Redirecting…', 'success');
       window.history.replaceState({}, '', window.location.pathname);
       setTimeout(function () { window.location.href = 'dashboard.html'; }, 800);
     } else if (params.get('login_error')) {
@@ -240,45 +265,47 @@
   }
 
   // ─────────────────────────────────────────────
-  // 9. SMART "OPEN DASHBOARD" (header + anywhere with data-smart-dashboard)
+  // 9. HEADER "OPEN DASHBOARD" — smart routing
   // ─────────────────────────────────────────────
-  function initSmartDashboard() {
-    document.addEventListener('click', function (e) {
-      var btn = e.target.closest && e.target.closest('#openDashboardHeader, [data-smart-dashboard]');
-      if (!btn) return;
+  function initHeaderDashboardBtn() {
+    var btn = document.getElementById('openDashboardHeader');
+    if (!btn) return;
+    btn.addEventListener('click', function (e) {
       e.preventDefault();
       var cached = getCachedUser();
       if (cached) { window.location.href = 'dashboard.html'; return; }
-      // Not logged in → OAuth
       if (!window.StardustAPI) { window.location.href = 'dashboard.html'; return; }
+      btn.textContent = 'Connecting…';
+      btn.style.pointerEvents = 'none';
       window.StardustAPI.login().catch(function () {
-        window.location.href = 'dashboard.html';
+        btn.textContent = 'Open Dashboard';
+        btn.style.pointerEvents = '';
       });
     });
   }
 
   // ─────────────────────────────────────────────
-  // 10. SESSION DETECTION → populate drawer profile
+  // 10. SESSION DETECTION → updates drawer
   // ─────────────────────────────────────────────
   async function detectSession() {
-    if (!window.StardustAPI) return;
-    var path = window.location.pathname.toLowerCase();
-    if (path.indexOf('dashboard') !== -1 || path.indexOf('server') !== -1) return;
-
-    // Skip on pages that don't have the drawer
+    // Only act on pages that have the drawer
     if (!document.getElementById('drawerUser')) return;
 
     var cached = getCachedUser();
-    if (cached) { populateDrawerUser(cached); return; }
+    if (cached) { showDrawerLoggedIn(cached); return; }
+
+    if (!window.StardustAPI) { showDrawerLoggedOut(); return; }
 
     try {
       var res = await window.StardustAPI.me();
       if (res.ok && res.data && res.data.id) {
         setCachedUser(res.data);
-        populateDrawerUser(res.data);
+        showDrawerLoggedIn(res.data);
+      } else {
+        showDrawerLoggedOut();
       }
     } catch (err) {
-      // silently ignore
+      showDrawerLoggedOut();
     }
   }
 
@@ -351,9 +378,10 @@
     runSafe('Drawer', initDrawer);
     runSafe('Showcase', initShowcase);
     runSafe('Toast', initToast);
+    runSafe('Header dashboard btn', initHeaderDashboardBtn);
+    runSafe('Drawer login', initDrawerLogin);
     runSafe('Drawer user menu', initDrawerUserMenu);
     runSafe('OAuth return', initOAuthReturn);
-    runSafe('Smart dashboard', initSmartDashboard);
     runSafe('Live status', initLiveStatus);
     runSafe('Smooth scroll', initSmoothScroll);
     setTimeout(function () { runSafe('Session detect', detectSession); }, 100);

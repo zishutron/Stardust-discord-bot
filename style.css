@@ -919,50 +919,75 @@ input, textarea, select { font: inherit; }
   .brand-mark { width: 28px; height: 28px; }
 }
 
-/* ═══ Global user chip (auto-injected by app.js) ═══ */
-.user-chip-btn {
-  display: inline-flex;
+/* ═══ Drawer user profile (bottom of mobile drawer) ═══ */
+.drawer-user {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  position: relative;
+}
+
+.drawer-user-btn {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 12px 4px 4px;
-  border-radius: 999px;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius);
   background: var(--surface);
   border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 13.5px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background var(--transition), border-color var(--transition);
   cursor: pointer;
-  max-width: 180px;
-  overflow: hidden;
-  flex-shrink: 0;
+  text-align: left;
+  transition: background var(--transition), border-color var(--transition);
 }
-.user-chip-btn:hover {
+.drawer-user-btn:hover {
   background: var(--surface-hover);
   border-color: var(--border-strong);
 }
-.user-chip-avatar {
-  width: 26px;
-  height: 26px;
+
+.drawer-user-avatar {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  background: var(--surface-2);
 }
-.user-chip-name {
-  max-width: 120px;
+
+.drawer-user-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.drawer-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.user-chip-caret { color: var(--text-muted); flex-shrink: 0; }
+.drawer-user-sub {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.drawer-user-caret {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform var(--transition);
+}
+.drawer-user-btn[aria-expanded="true"] .drawer-user-caret {
+  transform: rotate(180deg);
+}
 
-/* ─── User dropdown ─── */
-.global-user-menu {
-  position: fixed;
-  z-index: 1001;
-  min-width: 200px;
-  max-width: 240px;
+/* Drawer user dropdown menu (opens upward) */
+.drawer-user-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
@@ -970,32 +995,47 @@ input, textarea, select { font: inherit; }
   padding: 6px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-4px);
+  transform: translateY(8px);
   transition: opacity 180ms ease, visibility 180ms ease, transform 180ms ease;
+  z-index: 50;
 }
-.global-user-menu.open {
+.drawer-user-menu.open {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
 }
 
-/* ─── Fix for smaller viewports (mobile) ─── */
-@media (max-width: 720px) {
-  .user-chip-btn {
-    max-width: 140px;
-    padding: 4px 10px 4px 4px;
-  }
-  .user-chip-name {
-    max-width: 80px;
-    font-size: 13px;
-  }
+.drawer-user-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: background var(--transition), color var(--transition);
+}
+.drawer-user-item:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.drawer-user-item.danger { color: var(--danger); }
+.drawer-user-item.danger:hover {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+.drawer-user-item svg { flex-shrink: 0; }
+
+.drawer-user-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 2px;
 }
 
-@media (max-width: 420px) {
-  .user-chip-btn {
-    max-width: 60px;
-    padding: 4px;
-  }
-  .user-chip-name { display: none; }
-  .user-chip-caret { display: none; }
-}
+/* ═══ Remove old user-chip CSS (no longer used) ═══ */
+/* Nothing needed — chip is not created anymore */

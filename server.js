@@ -258,77 +258,45 @@
     return h.toLowerCase();
   }
 
-  // ─────────────────────────────────────────────
-  // IMAGE UPLOAD (Catbox, no API key needed)
-  // ─────────────────────────────────────────────
-  async function uploadImageToCdn(file) {
-    var dataUrl = await new Promise(function (resolve, reject) {
-      var reader = new FileReader();
-      reader.onload = function () { resolve(reader.result); };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+// ─────────────────────────────────────────────
+// IMAGE UPLOAD (ImgBB API)
+// ─────────────────────────────────────────────
+var IMGBB_API_KEY = '98718c328ac688477bd3728382dd690c';
 
-    var resized = await new Promise(function (resolve, reject) {
-      var img = new Image();
-      img.onload = function () {
-        var MAX = 500;
-        var w = img.width, h = img.height;
-        if (w > MAX || h > MAX) {
-          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
-          else { w = Math.round(w * MAX / h); h = MAX; }
-        }
-        var canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        canvas.toBlob(function (blob) { resolve(blob); }, 'image/png', 0.92);
-      };
-      img.onerror = reject;
-      img.src = dataUrl;
-    });
+async function uploadImageToCdn(file) {
+  // 1) Convert to base64
+  var base64 = await new Promise(function (resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var result = reader.result || '';
+      // Strip "data:image/...;base64," prefix
+      var comma = result.indexOf(',');
+      resolve(comma >= 0 ? result.slice(comma + 1) : result);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 
-    var fd = new FormData();
-    fd.append('reqtype', 'fileupload');
-    fd.append('fileToUpload', resized, 'stardust-' + Date.now() + '.png');
+  // 2) Upload to ImgBB
+  var fd = new FormData();
+  fd.append('key', IMGBB_API_KEY);
+  fd.append('image', base64);
+  fd.append('name', 'stardust-' + Date.now());
 
-    var res = await fetch('https://catbox.moe/user/api.php', { method: 'POST', body: fd });
-    if (!res.ok) throw new Error('Upload failed');
-    var url = (await res.text() || '').trim();
-    if (!/^https?:\/\//.test(url)) throw new Error('Invalid upload response');
-    return url;
+  var res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
+  if (!res.ok) {
+    var txt = await res.text().catch(function () { return ''; });
+    console.error('[UPLOAD] ImgBB HTTP error:', res.status, txt);
+    throw new Error('Upload failed: HTTP ' + res.status);
   }
 
-  function initImageUploads() {
-    document.addEventListener('change', async function (e) {
-      var input = e.target;
-      if (!input.classList || !input.classList.contains('upload-input')) return;
-      var file = input.files && input.files[0];
-      if (!file) return;
-      var targetId = input.dataset.target;
-      var target = document.getElementById(targetId);
-      if (!target) return;
-
-      var btn = input.closest('.upload-btn');
-      var originalHtml = btn.innerHTML;
-      btn.innerHTML = '<span class="upload-spinner"></span> Uploading…';
-      btn.style.pointerEvents = 'none';
-
-      try {
-        var url = await uploadImageToCdn(file);
-        target.value = url;
-        target.dispatchEvent(new Event('input', { bubbles: true }));
-        toast('Image uploaded.', 'success');
-      } catch (err) {
-        console.error('[UPLOAD]', err);
-        toast('Upload failed. Try again.', 'error');
-      } finally {
-        btn.innerHTML = originalHtml;
-        btn.style.pointerEvents = '';
-        input.value = '';
-      }
-    });
+  var json = await res.json();
+  if (!json || !json.success || !json.data || !json.data.url) {
+    console.error('[UPLOAD] ImgBB response:', json);
+    throw new Error((json && json.error && json.error.message) || 'ImgBB upload failed');
   }
+  return json.data.url;
+}
 
   // ─────────────────────────────────────────────
   // CONFIRM MODAL

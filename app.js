@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   STARDUST — Global page behavior (v2)
-   Auto-detects login, updates header buttons, theme, drawer.
+   STARDUST — Global page behavior (v3)
+   Auto-detects login, updates header, theme, drawer, dropdown.
    ═══════════════════════════════════════════════════════════ */
 
 (function () {
@@ -147,10 +147,10 @@
   }
 
   // ─────────────────────────────────────────────
-  // 6. USER SESSION — CACHE + HEADER UPDATE
+  // 6. SESSION — CACHE + HEADER UPDATE
   // ─────────────────────────────────────────────
   var SESSION_KEY = 'stardust_session_user';
-  var SESSION_MAX_AGE = 5 * 60 * 1000; // 5 min cache
+  var SESSION_MAX_AGE = 5 * 60 * 1000; // 5 min
 
   function getCachedUser() {
     try {
@@ -165,9 +165,7 @@
     } catch (e) { return null; }
   }
   function setCachedUser(user) {
-    try {
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ user: user, ts: Date.now() }));
-    } catch (e) {}
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ user: user, ts: Date.now() })); } catch (e) {}
   }
   function clearCachedUser() {
     try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
@@ -181,22 +179,24 @@
     return 'https://cdn.discordapp.com/embed/avatars/0.png';
   }
 
+  function escHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+
   function updateHeaderForUser(user) {
     if (!user) return;
     var name = user.global_name || user.username || 'User';
     var av = userAvatarUrl(user, 64);
 
-    // Replace every .login-btn with an "avatar chip" + dropdown OR keep as link to dashboard
     document.querySelectorAll('.login-btn').forEach(function (btn) {
       btn.classList.remove('login-btn');
       btn.classList.add('user-chip-btn');
       btn.setAttribute('aria-haspopup', 'true');
       btn.setAttribute('aria-expanded', 'false');
 
-      // Different rendering for <a> vs <button>
       var isA = btn.tagName === 'A';
-      var href = isA ? 'dashboard.html' : null;
-
       btn.innerHTML =
         '<img class="user-chip-avatar" src="' + av + '" alt="">' +
         '<span class="user-chip-name">' + escHtml(name) + '</span>' +
@@ -204,51 +204,79 @@
       if (isA) btn.setAttribute('href', 'dashboard.html');
     });
 
-    // Attach global handler for user-chip dropdown
-    document.addEventListener('click', function (e) {
-      var chip = e.target.closest && e.target.closest('.user-chip-btn');
-      if (chip) {
-        e.preventDefault();
-        e.stopPropagation();
-        var menu = document.getElementById('globalUserMenu');
-        if (!menu) {
-          menu = document.createElement('div');
-          menu.id = 'globalUserMenu';
-          menu.className = 'global-user-menu';
-          menu.innerHTML =
-            '<a href="dashboard.html" class="dropdown-item">My servers</a>' +
-            '<a href="support.html" class="dropdown-item">Support</a>' +
-            '<div class="dropdown-sep"></div>' +
-            '<button type="button" class="dropdown-item danger" id="globalLogoutBtn">Log out</button>';
-          document.body.appendChild(menu);
-          document.getElementById('globalLogoutBtn').addEventListener('click', async function (ev) {
-            ev.preventDefault();
-            try { await window.StardustAPI.logout(); } catch (er) {}
-            clearCachedUser();
-            window.location.href = 'index.html';
-          });
-        }
-        var rect = chip.getBoundingClientRect();
-        menu.style.top = (rect.bottom + 8) + 'px';
-        menu.style.right = (window.innerWidth - rect.right) + 'px';
-        menu.classList.add('open');
-        return;
-      }
-      var menu = document.getElementById('globalUserMenu');
-      if (menu && menu.classList.contains('open') && !e.target.closest('#globalUserMenu')) {
-        menu.classList.remove('open');
-      }
-    });
-  }
+    // Global dropdown handler (only attached once)
+    if (!window.__stardustUserMenuBound) {
+      window.__stardustUserMenuBound = true;
 
-  function escHtml(s) {
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
-    });
+      document.addEventListener('click', function (e) {
+        var chip = e.target.closest && e.target.closest('.user-chip-btn');
+        if (chip) {
+          e.preventDefault();
+          e.stopPropagation();
+          var menu = document.getElementById('globalUserMenu');
+          if (!menu) {
+            menu = document.createElement('div');
+            menu.id = 'globalUserMenu';
+            menu.className = 'global-user-menu';
+            menu.innerHTML =
+              '<a href="dashboard.html" class="dropdown-item">My servers</a>' +
+              '<a href="support.html" class="dropdown-item">Support</a>' +
+              '<div class="dropdown-sep"></div>' +
+              '<button type="button" class="dropdown-item danger" id="globalLogoutBtn">Log out</button>';
+            document.body.appendChild(menu);
+            document.getElementById('globalLogoutBtn').addEventListener('click', async function (ev) {
+              ev.preventDefault();
+              try { await window.StardustAPI.logout(); } catch (er) {}
+              clearCachedUser();
+              window.location.href = 'index.html';
+            });
+          }
+
+          // Toggle behavior
+          if (menu.classList.contains('open')) {
+            menu.classList.remove('open');
+            chip.setAttribute('aria-expanded', 'false');
+            return;
+          }
+
+          // Position: fixed, below the chip, clamped inside viewport
+          var rect = chip.getBoundingClientRect();
+          var menuWidth = 220;
+          var right = window.innerWidth - rect.right;
+          if (right < 12) right = 12;
+          if (window.innerWidth - right - menuWidth < 12) {
+            right = Math.max(12, window.innerWidth - menuWidth - 12);
+          }
+          menu.style.position = 'fixed';
+          menu.style.top = (rect.bottom + 8) + 'px';
+          menu.style.right = right + 'px';
+          menu.style.left = 'auto';
+          menu.classList.add('open');
+          chip.setAttribute('aria-expanded', 'true');
+          return;
+        }
+        var menu = document.getElementById('globalUserMenu');
+        if (menu && menu.classList.contains('open') && !e.target.closest('#globalUserMenu')) {
+          menu.classList.remove('open');
+        }
+      });
+    }
   }
 
   // ─────────────────────────────────────────────
-  // 7. LOGIN BUTTONS (only if not logged in)
+  // 7. DROPDOWN AUTO-CLOSE (scroll/resize)
+  // ─────────────────────────────────────────────
+  function initDropdownAutoClose() {
+    function closeMenu() {
+      var menu = document.getElementById('globalUserMenu');
+      if (menu) menu.classList.remove('open');
+    }
+    window.addEventListener('scroll', closeMenu, { passive: true });
+    window.addEventListener('resize', closeMenu);
+  }
+
+  // ─────────────────────────────────────────────
+  // 8. LOGIN BUTTONS (only if not logged in)
   // ─────────────────────────────────────────────
   function initLoginButtons() {
     document.addEventListener('click', function (e) {
@@ -270,23 +298,10 @@
         window.stardustToast && window.stardustToast(err.message || 'Login failed.', 'error');
       });
     });
-
-    // Special-case: "Open Dashboard" button — if logged in, jump straight to dashboard
-    document.addEventListener('click', function (e) {
-      var btn = e.target.closest && e.target.closest('.open-dashboard-btn');
-      if (!btn) return;
-      e.preventDefault();
-      var cached = getCachedUser();
-      if (cached) {
-        window.location.href = 'dashboard.html';
-      } else {
-        window.location.href = 'dashboard.html'; // dashboard.html will redirect to login if not authed
-      }
-    });
   }
 
   // ─────────────────────────────────────────────
-  // 8. OAUTH RETURN HANDLER
+  // 9. OAUTH RETURN HANDLER
   // ─────────────────────────────────────────────
   function initOAuthReturn() {
     var params = new URLSearchParams(window.location.search);
@@ -302,20 +317,17 @@
   }
 
   // ─────────────────────────────────────────────
-  // 9. SESSION DETECTION — THE KEY FIX
+  // 10. SESSION DETECTION
   // ─────────────────────────────────────────────
   async function detectSession() {
     if (!window.StardustAPI) return;
 
-    // Skip detection on dashboard/server pages — they handle their own
     var path = window.location.pathname.toLowerCase();
     if (path.indexOf('dashboard') !== -1 || path.indexOf('server') !== -1) return;
 
-    // Try cache first
     var cached = getCachedUser();
     if (cached) { updateHeaderForUser(cached); return; }
 
-    // Otherwise fetch /api/auth/me
     try {
       var res = await window.StardustAPI.me();
       if (res.ok && res.data && res.data.id) {
@@ -330,7 +342,7 @@
   }
 
   // ─────────────────────────────────────────────
-  // 10. LIVE STATUS
+  // 11. LIVE STATUS
   // ─────────────────────────────────────────────
   function initLiveStatus() {
     var footerDot = document.getElementById('footerStatusDot');
@@ -373,7 +385,7 @@
   }
 
   // ─────────────────────────────────────────────
-  // 11. SMOOTH SCROLL
+  // 12. SMOOTH SCROLL
   // ─────────────────────────────────────────────
   function initSmoothScroll() {
     document.addEventListener('click', function (e) {
@@ -401,9 +413,9 @@
     runSafe('Toast', initToast);
     runSafe('Login buttons', initLoginButtons);
     runSafe('OAuth return', initOAuthReturn);
+    runSafe('Dropdown autoclose', initDropdownAutoClose);
     runSafe('Live status', initLiveStatus);
     runSafe('Smooth scroll', initSmoothScroll);
-    // Session detection must run AFTER toast is ready
     setTimeout(function () { runSafe('Session detect', detectSession); }, 100);
     log('Ready.');
   }

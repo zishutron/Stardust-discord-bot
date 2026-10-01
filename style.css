@@ -934,8 +934,9 @@ input, textarea, select { font: inherit; }
   text-decoration: none;
   transition: background var(--transition), border-color var(--transition);
   cursor: pointer;
-  max-width: 200px;
+  max-width: 180px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 .user-chip-btn:hover {
   background: var(--surface-hover);
@@ -949,17 +950,19 @@ input, textarea, select { font: inherit; }
   flex-shrink: 0;
 }
 .user-chip-name {
-  max-width: 110px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .user-chip-caret { color: var(--text-muted); flex-shrink: 0; }
 
+/* ─── User dropdown ─── */
 .global-user-menu {
   position: fixed;
   z-index: 1001;
   min-width: 200px;
+  max-width: 240px;
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
@@ -976,8 +979,23 @@ input, textarea, select { font: inherit; }
   transform: translateY(0);
 }
 
+/* ─── Fix for smaller viewports (mobile) ─── */
 @media (max-width: 720px) {
-  .user-chip-btn { padding: 4px; }
+  .user-chip-btn {
+    max-width: 140px;
+    padding: 4px 10px 4px 4px;
+  }
+  .user-chip-name {
+    max-width: 80px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 420px) {
+  .user-chip-btn {
+    max-width: 60px;
+    padding: 4px;
+  }
   .user-chip-name { display: none; }
   .user-chip-caret { display: none; }
 }

@@ -268,21 +268,27 @@
   // 9. HEADER "OPEN DASHBOARD" — smart routing
   // ─────────────────────────────────────────────
   function initHeaderDashboardBtn() {
-    var btn = document.getElementById('openDashboardHeader');
+  // Attach to both header and hero buttons via shared helper
+  function bindDashboardBtn(btn) {
     if (!btn) return;
     btn.addEventListener('click', function (e) {
       e.preventDefault();
       var cached = getCachedUser();
       if (cached) { window.location.href = 'dashboard.html'; return; }
       if (!window.StardustAPI) { window.location.href = 'dashboard.html'; return; }
+      var original = btn.textContent;
       btn.textContent = 'Connecting…';
       btn.style.pointerEvents = 'none';
       window.StardustAPI.login().catch(function () {
-        btn.textContent = 'Open Dashboard';
+        btn.textContent = original;
         btn.style.pointerEvents = '';
       });
     });
   }
+
+  bindDashboardBtn(document.getElementById('openDashboardHeader'));
+  bindDashboardBtn(document.getElementById('openDashboardHero'));
+}
 
   // ─────────────────────────────────────────────
   // 10. SESSION DETECTION → updates drawer

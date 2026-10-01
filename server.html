@@ -16,7 +16,6 @@
 </head>
 <body class="dash-body server-body">
 
-<!-- ═══════════ TOP BAR ═══════════ -->
 <header class="dash-topbar">
   <div class="dash-topbar-inner">
     <a href="index.html" class="brand">
@@ -40,6 +39,7 @@
         <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false">
           <img class="user-avatar" id="userAvatar" src="" alt="">
           <span class="user-name" id="userName">—</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
         </button>
         <div class="user-dropdown" id="userDropdown" role="menu">
           <a href="dashboard.html" class="dropdown-item">My servers</a>
@@ -52,7 +52,6 @@
   </div>
 </header>
 
-<!-- ═══════════ SERVER SHELL ═══════════ -->
 <div class="server-shell" id="serverShell">
 
   <aside class="server-sidebar" id="serverSidebar" aria-hidden="true">
@@ -155,7 +154,6 @@
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
 
-    <!-- Loading -->
     <section class="server-loading" id="serverLoading">
       <div class="server-header-skeleton">
         <div class="skeleton skeleton-avatar" style="width:64px;height:64px;border-radius:14px;"></div>
@@ -171,7 +169,6 @@
       </div>
     </section>
 
-    <!-- Error -->
     <section class="server-error" id="serverError" hidden>
       <div class="empty-card">
         <div class="empty-icon">
@@ -186,10 +183,9 @@
       </div>
     </section>
 
-    <!-- Content -->
     <section class="server-content" id="serverContent" hidden>
 
-      <!-- ═════════ OVERVIEW ═════════ -->
+      <!-- ═══ OVERVIEW ═══ -->
       <div class="tab-panel active" data-panel="overview">
         <div class="server-hero">
           <div class="server-hero-icon" id="serverHeroIcon"></div>
@@ -225,7 +221,7 @@
         </div>
       </div>
 
-      <!-- ═════════ WELCOME ═════════ -->
+      <!-- ═══ WELCOME ═══ -->
       <div class="tab-panel" data-panel="welcome">
         <div class="panel-head">
           <h1 class="panel-title">Welcome</h1>
@@ -307,8 +303,15 @@
               </div>
             </div>
             <div class="form-row">
-              <label class="form-label">Banner image URL</label>
-              <input type="text" class="form-input" id="welcomeEmbedImage" placeholder="https://…">
+              <label class="form-label">Banner image</label>
+              <div class="image-input-row">
+                <input type="text" class="form-input" id="welcomeEmbedImage" placeholder="https://… or upload">
+                <label class="btn btn-secondary upload-btn">
+                  <input type="file" accept="image/*" class="upload-input" data-target="welcomeEmbedImage" hidden>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  Upload
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -333,7 +336,7 @@
         </div>
       </div>
 
-      <!-- ═════════ LEAVE ═════════ -->
+      <!-- ═══ LEAVE ═══ -->
       <div class="tab-panel" data-panel="leave">
         <div class="panel-head">
           <h1 class="panel-title">Leave</h1>
@@ -393,8 +396,15 @@
               </div>
             </div>
             <div class="form-row">
-              <label class="form-label">Banner image URL</label>
-              <input type="text" class="form-input" id="leaveEmbedImage" placeholder="https://…">
+              <label class="form-label">Banner image</label>
+              <div class="image-input-row">
+                <input type="text" class="form-input" id="leaveEmbedImage" placeholder="https://… or upload">
+                <label class="btn btn-secondary upload-btn">
+                  <input type="file" accept="image/*" class="upload-input" data-target="leaveEmbedImage" hidden>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  Upload
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -418,7 +428,7 @@
         </div>
       </div>
 
-      <!-- ═════════ BOOSTER ═════════ -->
+      <!-- ═══ BOOSTER ═══ -->
       <div class="tab-panel" data-panel="booster">
         <div class="panel-head">
           <h1 class="panel-title">Booster</h1>
@@ -490,8 +500,15 @@
               </div>
             </div>
             <div class="form-row">
-              <label class="form-label">Banner image URL</label>
-              <input type="text" class="form-input" id="boosterEmbedImage" placeholder="https://…">
+              <label class="form-label">Banner image</label>
+              <div class="image-input-row">
+                <input type="text" class="form-input" id="boosterEmbedImage" placeholder="https://… or upload">
+                <label class="btn btn-secondary upload-btn">
+                  <input type="file" accept="image/*" class="upload-input" data-target="boosterEmbedImage" hidden>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  Upload
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -501,7 +518,7 @@
         </div>
       </div>
 
-      <!-- ═════════ LEVELING ═════════ -->
+      <!-- ═══ LEVELING ═══ -->
       <div class="tab-panel" data-panel="leveling">
         <div class="panel-head">
           <h1 class="panel-title">Leveling</h1>
@@ -578,7 +595,7 @@
         </div>
       </div>
 
-      <!-- ═════════ ECONOMY ═════════ -->
+      <!-- ═══ ECONOMY ═══ -->
       <div class="tab-panel" data-panel="economy">
         <div class="panel-head">
           <h1 class="panel-title">Economy</h1>
@@ -657,7 +674,7 @@
         </div>
       </div>
 
-      <!-- ═════════ AUTOMOD ═════════ -->
+      <!-- ═══ AUTOMOD ═══ -->
       <div class="tab-panel" data-panel="automod">
         <div class="panel-head">
           <h1 class="panel-title">AutoMod</h1>
@@ -712,7 +729,7 @@
         </div>
       </div>
 
-      <!-- ═════════ AUTO-RESPONDER ═════════ -->
+      <!-- ═══ AUTO-RESPONDER ═══ -->
       <div class="tab-panel" data-panel="autoresponder">
         <div class="panel-head">
           <h1 class="panel-title">Auto-Responder</h1>
@@ -757,7 +774,7 @@
         </div>
       </div>
 
-      <!-- ═════════ LOGGING ═════════ -->
+      <!-- ═══ LOGGING ═══ -->
       <div class="tab-panel" data-panel="logging">
         <div class="panel-head">
           <h1 class="panel-title">Logging</h1>
@@ -791,7 +808,7 @@
         </div>
       </div>
 
-      <!-- ═════════ TICKETS ═════════ -->
+      <!-- ═══ TICKETS ═══ -->
       <div class="tab-panel" data-panel="tickets">
         <div class="panel-head">
           <h1 class="panel-title">Tickets</h1>
@@ -870,7 +887,7 @@
         </div>
       </div>
 
-      <!-- ═════════ CUSTOM COMMANDS ═════════ -->
+      <!-- ═══ CUSTOM COMMANDS ═══ -->
       <div class="tab-panel" data-panel="customcmds">
         <div class="panel-head">
           <h1 class="panel-title">Custom Commands</h1>
@@ -901,7 +918,7 @@
         </div>
       </div>
 
-      <!-- ═════════ EMBEDS ═════════ -->
+      <!-- ═══ EMBEDS ═══ -->
       <div class="tab-panel" data-panel="embeds">
         <div class="panel-head">
           <h1 class="panel-title">Embed Builder</h1>
@@ -926,8 +943,15 @@
               </div>
             </div>
             <div class="form-row">
-              <label class="form-label">Image URL (optional)</label>
-              <input type="text" class="form-input" id="emImage" placeholder="https://…">
+              <label class="form-label">Image</label>
+              <div class="image-input-row">
+                <input type="text" class="form-input" id="emImage" placeholder="https://… or upload">
+                <label class="btn btn-secondary upload-btn">
+                  <input type="file" accept="image/*" class="upload-input" data-target="emImage" hidden>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  Upload
+                </label>
+              </div>
             </div>
           </div>
           <div class="form-row">
@@ -956,7 +980,7 @@
         </div>
       </div>
 
-      <!-- ═════════ GIVEAWAYS ═════════ -->
+      <!-- ═══ GIVEAWAYS ═══ -->
       <div class="tab-panel" data-panel="giveaways">
         <div class="panel-head">
           <h1 class="panel-title">Giveaways</h1>
@@ -990,7 +1014,7 @@
         </div>
       </div>
 
-      <!-- ═════════ SETTINGS ═════════ -->
+      <!-- ═══ SETTINGS ═══ -->
       <div class="tab-panel" data-panel="settings">
         <div class="panel-head">
           <h1 class="panel-title">Server Settings</h1>
@@ -1014,10 +1038,8 @@
   </main>
 </div>
 
-<!-- Toast -->
 <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-<!-- Confirm modal -->
 <div class="modal-overlay" id="modalOverlay" hidden>
   <div class="modal" role="dialog" aria-modal="true">
     <h3 class="modal-title" id="modalTitle">Confirm</h3>

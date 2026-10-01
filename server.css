@@ -534,3 +534,47 @@
   .modal { padding: 20px; }
   .toast-stack { bottom: 16px; right: 16px; left: 16px; max-width: none; }
 }
+
+/* ─── Image input row with upload button ─── */
+.image-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.image-input-row .form-input { flex: 1; min-width: 0; }
+.upload-btn {
+  white-space: nowrap;
+  cursor: pointer;
+  gap: 6px;
+}
+.upload-btn:hover { background: var(--surface-hover); }
+.upload-spinner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── SVG stat icons (server hero stats) ─── */
+.stat-svg {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.server-hero-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 600px) {
+  .image-input-row { flex-direction: column; }
+  .image-input-row .form-input { width: 100%; }
+  .upload-btn { width: 100%; justify-content: center; }
+}
